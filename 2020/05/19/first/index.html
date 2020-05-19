@@ -378,7 +378,7 @@ var index = Math.floor((Math.random()*arr.length));
 			<nav>
 				
 				<div class="dearmsdan-count">
-					<span>文章</span>2
+					<span>文章</span>3
 					<span>标签</span>0
 					<span>分类</span>0
 				</div>		
@@ -459,6 +459,10 @@ var index = Math.floor((Math.random()*arr.length));
 	  </a>
     <div>
       <ul>
+        
+          <li>
+            <a href="/2020/05/20/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+          </li>
         
           <li>
             <a href="/2020/05/19/first/">httpclent调用webservice</a>
@@ -555,7 +559,7 @@ var index = Math.floor((Math.random()*arr.length));
 <aside id="article-toc" class="fixed-toc">
     <div id="article-toc-inner">
         <strong class="sidebar-title">目录</strong>
-        
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#操作系统"><span class="toc-text">操作系统</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#第一章-导论"><span class="toc-text">第一章 导论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是操作系统"><span class="toc-text">什么是操作系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多道程序设计和分时"><span class="toc-text">多道程序设计和分时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#操作系统的类型"><span class="toc-text">操作系统的类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#操作系统操作和功能"><span class="toc-text">操作系统操作和功能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#负债"><span class="toc-text">负债</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#所有者权益"><span class="toc-text">所有者权益</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#opreating-system"><span class="toc-text">opreating system</span></a></li></ol></li></ol>
     </div>
 </aside>
 </div>
@@ -597,8 +601,168 @@ var index = Math.floor((Math.random()*arr.length));
 			  <article>
 				<p>这是第一篇博客</p>
 <hr>
-<p>操作系统思维导图</p>
-<blockquote class="pullquote mindmap mindmap-md"><p>第一章 导论<br>    什么是操作系统<br>        操作系统目的<br>            运行程序–核心目标<br>            更高效使用计算机–面向系统<br>            更方便使用计算机–面向用户<br>            包括CPU管理，内存管理，文件管理和设备管理等内容<br>        操作系统定义<br>            极大化<br>             极小化<br>        计算机硬件结构<br>            CPU通过设备控制器控制设备运行得过程<br>              中断驱动<br>                中断过程<br>                    发送I/O指令到具体得设备控制器-&gt;设备控制器进行相应的I/O操作（CPU可以同时进行其他指令）-&gt;I/O完成后触发一个中断通知CPU-&gt;CPU响应中断请求，停止正在执行的程序，响应中断，执行这次的I/O操作-&gt;执行操作完成后继续执行刚才运行的程序<br>                中断服务程序<br>                    每个设备都有自己的中断号<br>                    0-255一个256个中断<br>                    系统有中断向量表，用于存放256个中断服务程序入口地址。每个入口对应一段代码，即中断服务程序<br>                    需要CPU支持，一般CPU至少有一个引脚用于接收中断<br>        操作系统启动<br>            计算机加电-&gt;运行引导程序 -&gt;引导区装入内存-&gt;执行引导区代码-&gt;引导操作系统启动<br>    多道程序设计和分时<br>        简单批处理系统<br>            核心是一个常驻监控程序（Monitor）<br>                控制作业传输<br>                调度作业运行<br>                自动从一个运行完的作业转换到下一个作业<br>        多道程序系统<br>            在管理程序控制下相互穿插运行<br>            使得CPU或I/O操作可以并行<br>            目的：提高CPU和设备的利用率<br>                并行<br>                    两个或者多个作业在同一时间运行<br>                并发<br>                    两个或多个作业在同一时间间隔内依次运行<br>        分时系统<br>            时间片<br>                将一段CPU时间按照固定单位进行分割，每个分割得到的时间段称为一个时间片<br>            分时系统<br>                采用时间片轮转方式使一台计算机为多个用户服务<br>                在单位时间内，每个用户获得一个时间片并运行<br>                保证用户获得足够小的响应时间，并提供交互能力<br>    操作系统的类型<br>        桌面操作系统<br>        手机操作系统（Android，ios）<br>        嵌入式系统<br>            内核较小、专用性强、系统精简、高实时性<br>        分布式系统<br>            支持分布式处理的软件系统、又称松耦合系统<br>            通过网络通信：TCP/IP<br>            客户机-服务器系统<br>            P2P系统<br>            多处理器系统<br>            集群刀片<br>    操作系统操作和功能<br>        操作系统操作<br>            双模式<br>                用户模式<br>                    所有得用户应用程序只能在用户模式下运行<br>                内核模式<br>                    只能运行操作系统得程序<br>            I/O和内存保护<br>            定时器<br>        操作系统功能<br>            进程管理<br>                创建和删除<br>                暂停和恢复<br>                提供进程同步/通讯/死锁处理机制<br>            内存管理<br>                内存分配/回收<br>                地址转换<br>                共享和保护<br>            文件管理<br>                文件系统<br>                文件逻辑结构<br>                文件物理结构<br>                目录<br>                文件检索方法<br>                文件操作<br>                空闲空间管理<br>                存储设备管理<br>            I/O设备管理<br>                设备管理<br>                设备驱动</p>
+<p>思维导图</p>
+<blockquote class="pullquote mindmap mindmap-md"><h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="第一章-导论"><a href="#第一章-导论" class="headerlink" title="第一章 导论"></a>第一章 导论</h2><h3 id="什么是操作系统"><a href="#什么是操作系统" class="headerlink" title="什么是操作系统"></a>什么是操作系统</h3><ul>
+<li><p>操作系统目的</p>
+<ul>
+<li>运行程序–核心目标</li>
+<li>更高效使用计算机–面向系统</li>
+<li>更方便使用计算机–面向用户</li>
+</ul>
+</li>
+<li><p>操作系统定义</p>
+<ul>
+<li>极大化</li>
+<li>极小化</li>
+</ul>
+</li>
+<li><p>计算机硬件结构</p>
+<ul>
+<li><p>CPU通过设备控制器控制设备运行得过程</p>
+</li>
+<li><p>中断驱动  </p>
+<ul>
+<li><p>中断过程</p>
+<ul>
+<li>发送I/O指令到具体得设备控制器-&gt;设备控制器进行相应的I/O操作（CPU可以同时进行其他指令）-&gt;I/O完成后触发一个中断通知CPU-&gt;CPU响应中断请求，停止正在执行的程序，响应中断，执行这次的I/O操作-&gt;执行操作完成后继续执行刚才运行的程序</li>
+</ul>
+</li>
+<li><p>中断服务程序</p>
+<ul>
+<li>每个设备都有自己的中断号</li>
+<li>0-255一个256个中断</li>
+<li>系统有中断向量表，用于存放256个中断服务程序入口地址。每个入口对应一段代码，即中断服务程序</li>
+<li>需要CPU支持，一般CPU至少有一个引脚用于接收中断</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>操作系统启动</p>
+<ul>
+<li>计算机加电-&gt;运行引导程序 -&gt;引导区装入内存-&gt;执行引导区代码-&gt;引导操作系统启动</li>
+</ul>
+</li>
+</ul>
+<h3 id="多道程序设计和分时"><a href="#多道程序设计和分时" class="headerlink" title="多道程序设计和分时"></a>多道程序设计和分时</h3><ul>
+<li><p>简单批处理系统</p>
+<ul>
+<li><p>核心是一个常驻监控程序（Monitor）</p>
+<ul>
+<li>控制作业传输</li>
+<li>调度作业运行</li>
+<li>自动从一个运行完的作业转换到下一个作业</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>多道程序系统</p>
+<ul>
+<li>在管理程序控制下相互穿插运行</li>
+<li>使得CPU或I/O操作可以并行</li>
+</ul>
+</li>
+<li><p>分时系统</p>
+<ul>
+<li><p>时间片</p>
+<ul>
+<li>将一段CPU时间按照固定单位进行分割，每个分割得到的时间段称为一个时间片</li>
+</ul>
+</li>
+<li><p>分时系统</p>
+<ul>
+<li>采用时间片轮转方式使一台计算机为多个用户服务</li>
+<li>在单位时间内，每个用户获得一个时间片并运行</li>
+<li>保证用户获得足够小的响应时间，并提供交互能力</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="操作系统的类型"><a href="#操作系统的类型" class="headerlink" title="操作系统的类型"></a>操作系统的类型</h3><ul>
+<li><p>桌面操作系统</p>
+</li>
+<li><p>手机操作系统（Android，ios）</p>
+</li>
+<li><p>嵌入式系统</p>
+<ul>
+<li>内核较小、专用性强、系统精简、高实时性</li>
+</ul>
+</li>
+<li><p>分布式系统</p>
+<ul>
+<li>支持分布式处理的软件系统、又称松耦合系统</li>
+<li>通过网络通信：TCP/IP</li>
+<li>客户机-服务器系统</li>
+<li>P2P系统</li>
+<li>多处理器系统</li>
+<li>集群刀片</li>
+</ul>
+</li>
+</ul>
+<h3 id="操作系统操作和功能"><a href="#操作系统操作和功能" class="headerlink" title="操作系统操作和功能"></a>操作系统操作和功能</h3><ul>
+<li><p>操作系统操作</p>
+<ul>
+<li><p>双模式</p>
+<ul>
+<li><p>用户模式</p>
+<ul>
+<li>所有得用户应用程序只能在用户模式下运行</li>
+</ul>
+</li>
+<li><p>内核模式</p>
+<ul>
+<li>只能运行操作系统得程序</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>I/O和内存保护</p>
+</li>
+<li><p>定时器</p>
+</li>
+</ul>
+</li>
+<li><p>操作系统功能</p>
+<ul>
+<li><p>进程管理</p>
+<ul>
+<li>创建和删除</li>
+<li>暂停和恢复</li>
+<li>提供进程同步/通讯/死锁处理机制</li>
+</ul>
+</li>
+<li><p>内存管理</p>
+<ul>
+<li>内存分配/回收</li>
+<li>地址转换</li>
+<li>共享和保护</li>
+</ul>
+</li>
+<li><p>文件管理</p>
+<ul>
+<li>文件系统</li>
+<li>文件逻辑结构</li>
+<li>文件物理结构</li>
+<li>目录</li>
+<li>文件检索方法</li>
+<li>文件操作</li>
+<li>空闲空间管理</li>
+<li>存储设备管理</li>
+</ul>
+</li>
+<li><p>I/O设备管理</p>
+<ul>
+<li>设备管理</li>
+<li>设备驱动</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="负债"><a href="#负债" class="headerlink" title="负债"></a>负债</h2><h2 id="所有者权益"><a href="#所有者权益" class="headerlink" title="所有者权益"></a>所有者权益</h2><h2 id="opreating-system"><a href="#opreating-system" class="headerlink" title="opreating system"></a>opreating system</h2><p>简称os</p>
+<p><em>XMind: ZEN - Trial Version</em></p>
 </blockquote><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
 			  </article>
 		</div>

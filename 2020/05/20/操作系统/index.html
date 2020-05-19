@@ -5,7 +5,7 @@
   
 
 <head>
-	<title>archive：2020 -  hi mogul</title>
+	<title>操作系统 -  hi mogul</title>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta name="keywords" content="hi mogul,hexo-theme-dearmsdan一款Hexo主题宝钻蓝色，给你一种空灵的感觉,hexo简约主题,HEXO,dearmsdan.com" />
 	<meta name="description" content="dearmsdan基于Bootstrap 框架HEXO 强力驱动的一个宝钻蓝 色调给你一种空灵的感觉">
@@ -543,204 +543,63 @@ var index = Math.floor((Math.random()*arr.length));
 				<div class="main-content">
 					
 <div class="dearmsdan">
-	<section class="dearmsdan-posts">
-    
-    <div class="dearmsdan-post" id="dearmsdanIndex">
-		
-        <a href="/2020/05/20/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
-            <div class="dearmsdan-title"> 
-				操作系统
-            </div>
-        </a>
-		
-        <article>
-            
-            <h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="第一章-导论"><a href="#第一章-导论" class="headerlink" title="第一章 导论"></a>第一章 导论</h2><h3 id="什么是操作系统"><a href="#什么是操作系统" class="headerlink" title="什么是操作系统"></a>什么是操作系统</h3><ul>
-<li><p>操作系统目的</p>
-<ul>
-<li>运行程序–核心目标</li>
-<li>更高效使用计算机–面向系统</li>
-<li>更方便使用计算机–面向用户</li>
-</ul>
-</li>
-<li><p>操作系统定义</p>
-<ul>
-<li>极大化</li>
-<li>极小化</li>
-</ul>
-</li>
-<li><p>计算机硬件结构</p>
-<ul>
-<li><p>CPU通过设备控制器控制设备运行得过程</p>
-</li>
-<li><p>中断驱动  </p>
-<ul>
-<li><p>中断过程</p>
-<ul>
-<li>发送I/O指令到具体得设备控制器-&gt;设备控制器进行相应的I/O操作（CPU可以同时进行其他指令）-&gt;I/O完成后触发一个中断通知CPU-&gt;CPU响应中断请求，停止正在执行的程序，响应中断，执行这次的I/O操作-&gt;执行操作完成后继续执行刚才运行的程序</li>
-</ul>
-</li>
-<li><p>中断服务程序</p>
-<ul>
-<li>每个设备都有自己的中断号</li>
-<li>0-255一个256个中断</li>
-<li>系统有中断向量表，用于存放256个中断服务程序入口地址。每个入口对应一段代码，即中断服务程序</li>
-<li>需要CPU支持，一般CPU至少有一个引脚用于接收中断</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>操作系统启动</p>
-<ul>
-<li>计算机加电-&gt;运行引导程序 -&gt;引导区装入内存-&gt;执行引导区代码-&gt;引导操作系统启动</li>
-</ul>
-</li>
-</ul>
-<h3 id="多道程序设计和分时"><a href="#多道程序设计和分时" class="headerlink" title="多道程序设计和分时"></a>多道程序设计和分时</h3><ul>
-<li><p>简单批处理系统</p>
-<ul>
-<li><p>核心是一个常驻监控程序（Monitor）</p>
-<ul>
-<li>控制作业传输</li>
-<li>调度作业运行</li>
-<li>自动从一个运行完的作业转换到下一个作业</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>多道程序系统</p>
-<ul>
-<li>在管理程序控制下相互穿插运行</li>
-<li>使得CPU或I/O操作可以并行</li>
-</ul>
-</li>
-<li><p>分时系统</p>
-<ul>
-<li><p>时间片</p>
-<ul>
-<li>将一段CPU时间按照固定单位进行分割，每个分割得到的时间段称为一个时间片</li>
-</ul>
-</li>
-<li><p>分时系统</p>
-<ul>
-<li>采用时间片轮转方式使一台计算机为多个用户服务</li>
-<li>在单位时间内，每个用户获得一个时间片并运行</li>
-<li>保证用户获得足够小的响应时间，并提供交互能力</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="操作系统的类型"><a href="#操作系统的类型" class="headerlink" title="操作系统的类型"></a>操作系统的类型</h3><ul>
-<li><p>桌面操作系统</p>
-</li>
-<li><p>手机操作系统（Android，ios）</p>
-</li>
-<li><p>嵌入式系统</p>
-<ul>
-<li>内核较小、专用性强、系统精简、高实时性</li>
-</ul>
-</li>
-<li><p>分布式系统</p>
-<ul>
-<li>支持分布式处理的软件系统、又称松耦合系统</li>
-<li>通过网络通信：TCP/IP</li>
-<li>客户机-服务器系统</li>
-<li>P2P系统</li>
-<li>多处理器系统</li>
-<li>集群刀片</li>
-</ul>
-</li>
-</ul>
-<h3 id="操作系统操作和功能"><a href="#操作系统操作和功能" class="headerlink" title="操作系统操作和功能"></a>操作系统操作和功能</h3><ul>
-<li><p>操作系统操作</p>
-<ul>
-<li><p>双模式</p>
-<ul>
-<li><p>用户模式</p>
-<ul>
-<li>所有得用户应用程序只能在用户模式下运行</li>
-</ul>
-</li>
-<li><p>内核模式</p>
-<ul>
-<li>只能运行操作系统得程序</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>I/O和内存保护</p>
-</li>
-<li><p>定时器</p>
-</li>
-</ul>
-</li>
-<li><p>操作系统功能</p>
-<ul>
-<li><p>进程管理</p>
-<ul>
-<li>创建和删除</li>
-<li>暂停和恢复</li>
-<li>提供进程同步/通讯/死锁处理机制</li>
-</ul>
-</li>
-<li><p>内存管理</p>
-<ul>
-<li>内存分配/回收</li>
-<li>地址转换</li>
-<li>共享和保护</li>
-</ul>
-</li>
-<li><p>文件管理</p>
-<ul>
-<li>文件系统</li>
-<li>文件逻辑结构</li>
-<li>文件物理结构</li>
-<li>目录</li>
-<li>文件检索方法</li>
-<li>文件操作</li>
-<li>空闲空间管理</li>
-<li>存储设备管理</li>
-</ul>
-</li>
-<li><p>I/O设备管理</p>
-<ul>
-<li>设备管理</li>
-<li>设备驱动</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="负债"><a href="#负债" class="headerlink" title="负债"></a>负债</h2><h2 id="所有者权益"><a href="#所有者权益" class="headerlink" title="所有者权益"></a>所有者权益</h2><h2 id="opreating-system"><a href="#opreating-system" class="headerlink" title="opreating system"></a>opreating system</h2><p>简称os</p>
-<p><em>XMind: ZEN - Trial Version</em></p>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
-            
-        </article>
-        <div class="dearmsdan-post-Statistics">
+	<div class="dearmsdan-post" id="dearmsdanPost">
+		<div class="dearmsdan-title">
+			<h1>操作系统</h1>
+		</div>
+	  <div id="post" class="dearmsdan-post-Statistics">
             <a>2020年05月20日</a>
-            
-            
-        </div>
 		
+		
+	  </div>
+		
+		
+<div id="modal" style="display:none">
+
+<aside id="article-toc" class="fixed-toc">
+    <div id="article-toc-inner">
+        <strong class="sidebar-title">目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#操作系统"><span class="toc-text">操作系统</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#第一章-导论"><span class="toc-text">第一章 导论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是操作系统"><span class="toc-text">什么是操作系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多道程序设计和分时"><span class="toc-text">多道程序设计和分时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#操作系统的类型"><span class="toc-text">操作系统的类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#操作系统操作和功能"><span class="toc-text">操作系统操作和功能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#负债"><span class="toc-text">负债</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#所有者权益"><span class="toc-text">所有者权益</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#opreating-system"><span class="toc-text">opreating system</span></a></li></ol></li></ol>
     </div>
-    
-    <div class="dearmsdan-post" id="dearmsdanIndex">
+</aside>
+</div>
+
+
 		
-        <a href="/2020/05/19/first/">
-            <div class="dearmsdan-title"> 
-				httpclent调用webservice
-            </div>
-        </a>
-		
-        <article>
-            
-            <p>这是第一篇博客</p>
-<hr>
-<p>思维导图</p>
-<blockquote class="pullquote mindmap mindmap-md"><h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="第一章-导论"><a href="#第一章-导论" class="headerlink" title="第一章 导论"></a>第一章 导论</h2><h3 id="什么是操作系统"><a href="#什么是操作系统" class="headerlink" title="什么是操作系统"></a>什么是操作系统</h3><ul>
+			<a href="#modal" class="second">
+				<div class="i">
+						<i style="font-size:20px" class="DearMsDanIconFont icon-sousuo">
+						<span style="font-size:0px"><br/>目<br/>录</span>
+						</i>
+				</div>
+			</a>
+
+
+
+
+<script>
+	$(".second .i").mouseover(function(){
+  $(".second .i span").css("font-size","18px");
+});
+	$(".second .i").mouseleave(function(){
+  $(".second .i span").css("font-size","0px");
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+	<script src="/resources/toc/jquery.pageslide.js"></script>
+		<div>
+			  <article>
+				<h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="第一章-导论"><a href="#第一章-导论" class="headerlink" title="第一章 导论"></a>第一章 导论</h2><h3 id="什么是操作系统"><a href="#什么是操作系统" class="headerlink" title="什么是操作系统"></a>什么是操作系统</h3><ul>
 <li><p>操作系统目的</p>
 <ul>
 <li>运行程序–核心目标</li>
@@ -901,60 +760,36 @@ var index = Math.floor((Math.random()*arr.length));
 </ul>
 <h2 id="负债"><a href="#负债" class="headerlink" title="负债"></a>负债</h2><h2 id="所有者权益"><a href="#所有者权益" class="headerlink" title="所有者权益"></a>所有者权益</h2><h2 id="opreating-system"><a href="#opreating-system" class="headerlink" title="opreating system"></a>opreating system</h2><p>简称os</p>
 <p><em>XMind: ZEN - Trial Version</em></p>
-</blockquote><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
-            
-        </article>
-        <div class="dearmsdan-post-Statistics">
-            <a>2020年05月19日</a>
-            
-            
-        </div>
-		
-    </div>
-    
-    <div class="dearmsdan-post" id="dearmsdanIndex">
-		
-        <a href="/2020/05/19/hello-world/">
-            <div class="dearmsdan-title"> 
-				Hello World
-            </div>
-        </a>
-		
-        <article>
-            
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
-            
-        </article>
-        <div class="dearmsdan-post-Statistics">
-            <a>2020年05月19日</a>
-            
-            
-        </div>
+			  </article>
+		</div>
 		
-    </div>
-    
-</section>
+		
+
+		 
+
+		
 	
+		
+	  
+	
+		
 
 
+<div class="copy">
+<i></i>
+<strong>本文作者：</strong>
+	
+	 
+			dearmsdan<br>
+        
+	
+<strong>本文链接：</strong>
+	<a href="http://yoursite.com/2020/05/20/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" title="http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;05&#x2F;20&#x2F;%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;05&#x2F;20&#x2F;%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F&#x2F;</a><br>
+</div>
 
-<!--
-        prev_text: '<i class="iconfont">&#xe617;</i>',
-        next_text: '<i class="iconfont">&#xe627;</i>'
--->
+	  
+	</div>
 </div>
     				
 					<!--<iframe src="a/index.html" class="iframe_mx uicss-cn"></iframe>-->
