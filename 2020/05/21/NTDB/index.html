@@ -22,7 +22,7 @@
 
   
 
-  <title>标签: 线性结构 | ChenSH</title>
+  <title>NTDB | ChenSH</title>
 
   
 
@@ -78,7 +78,7 @@
 
     
 <!-- header container -->
-<header class="header-container">
+<header class="header-container post">
 
   
   
@@ -91,17 +91,27 @@
 
   
   
-    
+
+  
+  
     <div class="header-content">
       <div class="post-image" style="background-image: url(https://qiniu.miiiku.xyz/src/images/banner.jpg)"></div>
       <div class="post-text">
-        <h1 class="title-wrap">线性结构</h1>
-        <h2 class="title-sub-wrap">当前标签下共有1篇文章</h2>
+        <div class="type-wrap">
+          <a class="article-category-link" href="/categories/SQL-Server/">SQL Server</a>
+        </div>
+        <h1 class="title-wrap">NTDB</h1>
+        <h2 class="title-sub-wrap">
+          <strong>飞天光头强</strong>
+          <span>发布于</span>
+          
+  <a href="javascript:;" class="article-date">
+    <time datetime="2020-05-21T08:10:38.873Z" itemprop="datePublished">2020-05-21</time>
+  </a>
+
+        </h2>
       </div>
     </div>
-  
-
-  
   
 
   
@@ -109,44 +119,85 @@
 
   </header>
 
-    <!-- 标签归档 -->
+    <!-- 文章 -->
 
-<!-- post list container -->
-<div class="body-container float">
-  <div class="content-container article-list">
-    <div class="card-container card-articles">
-      <div class="card-wrap">
+<!-- 文章内容 -->
+
+<div class="body-container">
+  <article class="content-container article-container">
+    <div class="article-content">
+      
+      
+
+      <section class="article-entry">
+        <p>1.什么是存储过程？<br>     存储过程就是作为可执行对象存放在数据库中的一个或者多个命令。通俗来讲：存储过程其实就是能完成一定操作的一组SQL语句<br>2.优点<br>    存储过程允许标准组件式编程<br>    能够实现比较快的执行速度<br>    存储过程减轻网络流量<br>    可被作为一种安全机制来充分利用<br>3.</p>
+<p>设计简单的储存过程</p>
+<p><img src="/2020/05/21/NTDB/1590028185072.png" alt="1590028185072"></p>
+<p>设计一个带参数的存储过程</p>
+<p><img src="/2020/05/21/NTDB/1590028435634.png" alt="1590028435634"></p>
+<p>带两个参数的存储过程</p>
+<p><img src="/2020/05/21/NTDB/1590028693596.png" alt="1590028693596"></p>
+<p>带OUTPUT的存储过程</p>
+<p>​     <strong>创建一个存储过程，**</strong>根据性别输出学生信息和人数。**  </p>
+<p><img src="/2020/05/21/NTDB/1590048042059.png" alt="1590048042059"></p>
+<p>存储过程的修改</p>
+<p>create proc pr_test @xingming char(12)</p>
+<p>as</p>
+<p>begin</p>
+<p>select * from xuesheng where 姓名=@xingming</p>
+<p>end</p>
+<p><strong>修改存储过程</strong></p>
+<p>alter proc pr_test @xuehao char(9)</p>
+<p>as</p>
+<p>begin</p>
+<p>select * from xuesheng where 学号=@xuehao</p>
+<p>end</p>
+<p>存储过程的删除</p>
+<p>if exists(select name from sysobjects where name=’pr_test’) //pr_test=存储过程名字</p>
+<p> drop proc pr_test</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+      </section>
+
+      <section class="article-footer">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%82%A8%E5%AD%98%E8%BF%87%E7%A8%8B/" rel="tag">#储存过程</a></li></ul>
+      </section>
+
+      <section class="article-navs">
         
+<nav class="card-container card-article-nav">
+  <div class="card-wrap">
+    
+    
+      <div id="article-nav-older" class="card-item">
+        <article>
           
-          <div class="card-item">
-            <article>
-              
-              
-                <a class="article-link card-link" href="/2020/05/20/data-structure-list/" itemprop="url"></a>
-              
-              <h2 class="article-title">线性表</h2>
-              <div class="article-meta">
-                <strong>飞天光头强</strong>
-                <span>发布于</span>
-                
-  <a href="/2020/05/20/data-structure-list/" class="article-date">
-    <time datetime="2020-05-20T07:20:36.000Z" itemprop="datePublished">2020-05-20</time>
-  </a>
-
-              </div>
-              <div class="article-category">
-                <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a>
-              </div>
-            </article>
-          </div>
-        
+          <a class="card-link article-nav-link" href="/2020/05/20/data-structure-list/"></a>
+          <strong class="article-nav-caption">Older</strong>
+          <p class="article-nav-title">
+            
+              线性表
+            
+          </p>
+        </article>
       </div>
-    </div>
+    
   </div>
+</nav>
+
+      </section>
+
+      
+
+  
+  
+
+  
+  
+
+
+    </div>
+  </article>
 </div>
-
-<!-- page container -->
-
 
     <!-- footer container -->
 <footer id="footer" class="footer">
