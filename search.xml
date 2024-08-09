@@ -5,7 +5,7 @@
     <url>/2024/08/09/UnityGameframework_00/</url>
     <content><![CDATA[<h2 id="关于项目使用GameframeWork的记录"><a href="#关于项目使用GameframeWork的记录" class="headerlink" title="关于项目使用GameframeWork的记录"></a>关于项目使用GameframeWork的记录</h2><h3 id="为什么使用GameframeWork？"><a href="#为什么使用GameframeWork？" class="headerlink" title="为什么使用GameframeWork？"></a>为什么使用GameframeWork？</h3><ul>
 <li><strong>作用</strong>：保证项目的支撑性以及约束性;</li>
-<li><strong>为什么不选择别的frameWork</strong>：2.目前因为是新公司，只有两个开发，如果使用自研框架，就算可以保证框架的质量也需要很长的时间，调研了不同的框架，像ET、GameFrameWork，都需要很长的时间，需要不断迭代，不断更新，ET到目前已经超过了五年，GameFrameWork从2013-2021年。</li>
+<li><strong>为什么不选择自研</strong>：2.目前因为是新公司，只有两个开发，如果使用自研框架，就算可以保证框架的质量也需要很长的时间，调研了不同的框架，像ET、GameFrameWork，都需要很长的时间，需要不断迭代，不断更新，ET到目前已经超过了五年，GameFrameWork从2013-2021年。</li>
 </ul>
 <h2 id="GameFramework-和-ET-的区别"><a href="#GameFramework-和-ET-的区别" class="headerlink" title="GameFramework 和 ET 的区别"></a>GameFramework 和 ET 的区别</h2><h3 id="1-设计理念与架构"><a href="#1-设计理念与架构" class="headerlink" title="1. 设计理念与架构"></a>1. 设计理念与架构</h3><h4 id="GameFramework"><a href="#GameFramework" class="headerlink" title="GameFramework"></a>GameFramework</h4><ul>
 <li><strong>轻量级框架</strong>：GameFramework 是一个轻量级的游戏框架，专注于提供基础的游戏开发功能，如资源管理、UI 管理、事件系统、网络通信、对象池、配置管理等。</li>
