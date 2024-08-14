@@ -63,11 +63,17 @@
 </ul>
 <p>因为模块比较多，所以我需要分模块来学习。</p>
 <hr>
-<h3 id="引用：EllanJiang-Github内容"><a href="#引用：EllanJiang-Github内容" class="headerlink" title="引用：EllanJiang Github内容"></a>引用：EllanJiang Github内容</h3><a class="button  center large" href='https://github.com/EllanJiang' title='Github'>Github</a>
+<h3 id="引用：EllanJiang-Github内容"><a href="#引用：EllanJiang-Github内容" class="headerlink" title="引用：EllanJiang Github内容"></a>引用：EllanJiang Github内容</h3><a class="button  center large" href='https://github.com/EllanJiang' title='Github'><i class='fa fa-thumbs-up'></i> Github</a>
 <a class="button  center large" href='https://github.com/EllanJiang/StarForce/archive/refs/heads/master.zip' title='Unity示例项目下载'><i class='fa-solid fa-download'></i> Unity示例项目下载</a>
 <a class="button  center large" href='https://github.com/EllanJiang/GameFramework/archive/refs/heads/master.zip' title='GameFramework源码下载'><i class='fa-solid fa-download'></i> GameFramework源码下载</a>
 <a class="button  center large" href='https://github.com/EllanJiang/GameFramework/archive/refs/heads/master.zip' title='GameFramework（GF层）源码下载'><i class='fa-solid fa-download'></i> GameFramework（GF层）源码下载</a>
-<a class="button  center large" href='https://github.com/EllanJiang/UnityGameFramework/archive/refs/heads/master.zip' title='GameFramework（UGF层|将GF层封装成了动态链接库）示例下载'><i class='fa-solid fa-download'></i> GameFramework（UGF层|将GF层封装成了动态链接库）示例下载</a>]]></content>
+<a class="button  center large" href='https://github.com/EllanJiang/UnityGameFramework/archive/refs/heads/master.zip' title='GameFramework（UGF层|将GF层封装成了动态链接库）示例下载'><i class='fa-solid fa-download'></i> GameFramework（UGF层|将GF层封装成了动态链接库）示例下载</a>
+
+<h3 id="参考：花桑大佬"><a href="#参考：花桑大佬" class="headerlink" title="参考：花桑大佬"></a>参考：花桑大佬</h3><a class="button  center large" href='https://www.drflower.top/' title='博客'><i class='fa fa-thumbs-up'></i> 博客</a>
+
+<a class="button  center large" href='https://github.com/DrFlower/TowerDefense-GameFramework-Demo/archive/refs/heads/master.zip' title='塔防DEMO'><i class='fa fa-thumbs-up'></i> 塔防DEMO</a>
+
+<h4 id="以上内容只为了方便学习与下载集合到一起"><a href="#以上内容只为了方便学习与下载集合到一起" class="headerlink" title="以上内容只为了方便学习与下载集合到一起!!!!"></a><font color="red">以上内容只为了方便学习与下载集合到一起!!!!</font></h4>]]></content>
       <categories>
         <category>Gameframework</category>
       </categories>
@@ -81,7 +87,7 @@
     <content><![CDATA[<h3 id="Game-Framework-整体架构"><a href="#Game-Framework-整体架构" class="headerlink" title="Game Framework 整体架构"></a>Game Framework 整体架构</h3><p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/../Image/image.png"
+                     data-src="/../Image/GF-UGF-GAME.drawio.png"
                       alt="架构图"
                 ></p>
 <ul>
@@ -100,7 +106,37 @@
 <li>GameFrameworkModule提供了所有模块需要的基础接口，通过BaseComp轮询所有Update<br>– 如果模块需要引擎提供的参数，可以在UGF层初始化模块时传入<br>– 如果模块需要调用引擎原生的功能，框架抽象出了Helper辅助器，辅助器继承MonoBehaviour</li>
 </ul>
 <h4 id="-2"><a href="#-2" class="headerlink" title=""></a></h4><ul>
-<li>每个模块实现对应模块的接口<br>— 如UIManager实现接口IUIManager,即XXXManager实现IXXXManager，降低耦合度，替换性强</li>
+<li>每个模块实现对应模块的接口<br>– 如UIManager实现接口IUIManager,即XXXManager实现IXXXManager，降低耦合度，可替换性强</li>
+</ul>
+<h3 id="UGF层"><a href="#UGF层" class="headerlink" title="UGF层"></a>UGF层</h3><h4 id="UGF层与GF层的关系"><a href="#UGF层与GF层的关系" class="headerlink" title="UGF层与GF层的关系"></a>UGF层与GF层的关系</h4><ul>
+<li>UGF层将模块组件化，实现需要依赖引擎功能的模块都存在一个XXXComponent类</li>
+</ul>
+<h5 id="-3"><a href="#-3" class="headerlink" title=""></a></h5><ul>
+<li>XXXCompnent 继承 GameFrameworkComponent 继承 MonoBehaviour</li>
+</ul>
+<h5 id="-4"><a href="#-4" class="headerlink" title=""></a></h5><ul>
+<li>GameFrameworkComponent 实现了Awake函数，在对象生命周期开始时注册该组件到GameEntry组件链表内并创建IXXXMananger的实例</li>
+</ul>
+<h5 id="-5"><a href="#-5" class="headerlink" title=""></a></h5><ul>
+<li>所有被注册到GameEntry内的组件都会在Basecomp中轮询组件的Update函数</li>
+</ul>
+<h5 id="-6"><a href="#-6" class="headerlink" title=""></a></h5><ul>
+<li>XXXComponent 没有直接依赖模块类，而是依赖模块抽象接口</li>
+</ul>
+<h5 id="-7"><a href="#-7" class="headerlink" title=""></a></h5><ul>
+<li>例如：UIComponent-&gt;IUIMnanger</li>
+</ul>
+<h5 id="-8"><a href="#-8" class="headerlink" title=""></a></h5><ul>
+<li>组件与模块之间实现松耦合</li>
+</ul>
+<h5 id="-9"><a href="#-9" class="headerlink" title=""></a></h5><ul>
+<li>通过替换接口实现更容易进行单元测试</li>
+</ul>
+<h5 id="-10"><a href="#-10" class="headerlink" title=""></a></h5><ul>
+<li>符合SOLID-DIP:鼓励依赖抽象而不是实现</li>
+</ul>
+<h5 id="-11"><a href="#-11" class="headerlink" title=""></a></h5><ul>
+<li>结合UnityEditor扩展序列化模块属性到Inspector进行可视化配置</li>
 </ul>
 ]]></content>
       <categories>
