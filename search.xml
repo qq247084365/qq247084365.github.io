@@ -1,6 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>UnityGameframework 内置模块</title>
+    <url>/2024/08/09/UnityGameframework-01/</url>
+    <content><![CDATA[<h3 id="Game-Framework-内置模块"><a href="#Game-Framework-内置模块" class="headerlink" title="Game Framework 内置模块"></a>Game Framework 内置模块</h3><p><code>Game Framework</code> 是一个基于 Unity 引擎的游戏框架，提供了多种模块封装了游戏开发过程中常用的功能。以下是框架中包含的 19 个内置模块的详细描述：</p>
+<h4 id="来自：https-github-com-EllanJiang-GameFramework"><a href="#来自：https-github-com-EllanJiang-GameFramework" class="headerlink" title="来自：https://github.com/EllanJiang/GameFramework/"></a>来自：<a class="link"   href="https://github.com/EllanJiang/GameFramework/" >https://github.com/EllanJiang/GameFramework/ <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h4><h4 id="1-全局配置-Config"><a href="#1-全局配置-Config" class="headerlink" title="1. 全局配置 (Config)"></a>1. 全局配置 (Config)</h4><ul>
+<li>全局配置模块用于存储一些全局的只读游戏配置数据，例如玩家初始速度、游戏初始音量等。这些数据通常在游戏启动时加载，并在整个游戏过程中保持不变。</li>
+</ul>
+<h4 id="2-数据结点-Data-Node"><a href="#2-数据结点-Data-Node" class="headerlink" title="2. 数据结点 (Data Node)"></a>2. 数据结点 (Data Node)</h4><ul>
+<li>数据结点模块允许开发者以树状结构的形式保存任意类型的数据，用于管理游戏运行时的各种数据。例如，可以将游戏的配置数据、运行状态等信息组织在一个树状结构中，方便读取和修改。</li>
+</ul>
+<h4 id="3-数据表-Data-Table"><a href="#3-数据表-Data-Table" class="headerlink" title="3. 数据表 (Data Table)"></a>3. 数据表 (Data Table)</h4><ul>
+<li>数据表模块允许开发者使用表格（如 Microsoft Excel）形式的配置文件来管理游戏数据。数据表的格式是可以自定义的，并且在游戏中通过此模块使用这些数据表。</li>
+</ul>
+<h4 id="4-调试器-Debugger"><a href="#4-调试器-Debugger" class="headerlink" title="4. 调试器 (Debugger)"></a>4. 调试器 (Debugger)</h4><ul>
+<li>调试器模块在游戏在 Unity 编辑器中运行或以 Development 方式发布运行时提供调试器窗口，便于查看运行时日志、调试信息等。开发者可以方便地将自己的功能注册到调试器窗口上并使用。</li>
+</ul>
+<h4 id="5-下载-Download"><a href="#5-下载-Download" class="headerlink" title="5. 下载 (Download)"></a>5. 下载 (Download)</h4><ul>
+<li>下载模块提供文件下载功能，支持断点续传，并可指定允许几个下载器进行同时下载。这个模块在更新资源时会主动被调用。</li>
+</ul>
+<h4 id="6-实体-Entity"><a href="#6-实体-Entity" class="headerlink" title="6. 实体 (Entity)"></a>6. 实体 (Entity)</h4><ul>
+<li>实体模块将游戏场景中动态创建的一切物体定义为实体。此模块提供管理实体和实体组的功能，如显示隐藏实体、挂接实体（如挂接武器、坐骑，或者抓起另一个实体）等。实体使用结束后可以不立刻销毁，从而等待下一次重新使用。</li>
+</ul>
+<h4 id="7-事件-Event"><a href="#7-事件-Event" class="headerlink" title="7. 事件 (Event)"></a>7. 事件 (Event)</h4><ul>
+<li>事件模块提供游戏逻辑监听、抛出事件的机制。<code>Game Framework</code> 中的很多模块在完成操作后都会抛出内置事件，监听这些事件将大大解除游戏逻辑之间的耦合。开发者也可以定义自己的游戏逻辑事件。</li>
+</ul>
+<h4 id="8-文件系统-File-System"><a href="#8-文件系统-File-System" class="headerlink" title="8. 文件系统 (File System)"></a>8. 文件系统 (File System)</h4><ul>
+<li>文件系统模块使用类似磁盘的概念对零散文件进行集中管理，优化资源加载时产生的内存分配，甚至可以对资源进行局部片段加载，这些都将极大提升资源加载时的性能。</li>
+</ul>
+<h4 id="9-有限状态机-FSM"><a href="#9-有限状态机-FSM" class="headerlink" title="9. 有限状态机 (FSM)"></a>9. 有限状态机 (FSM)</h4><ul>
+<li>有限状态机模块提供创建、使用和销毁有限状态机的功能，一些适用于有限状态机机制的游戏逻辑，使用此模块将是一个不错的选择。</li>
+</ul>
+<h4 id="10-本地化-Localization"><a href="#10-本地化-Localization" class="headerlink" title="10. 本地化 (Localization)"></a>10. 本地化 (Localization)</h4><ul>
+<li>本地化模块提供本地化功能，也就是多语言支持。<code>Game Framework</code> 不仅支持文本的本地化，还支持任意资源的本地化，比如游戏中释放烟花特效也可以做出几个多国语言的版本。</li>
+</ul>
+<h4 id="11-网络-Network"><a href="#11-网络-Network" class="headerlink" title="11. 网络 (Network)"></a>11. 网络 (Network)</h4><ul>
+<li>网络模块提供使用 Socket 长连接的功能，当前支持 TCP 协议，同时兼容 IPv4 和 IPv6 两个版本。开发者可以同时建立多个连接与多个服务器进行通信，支持接入各种协议库。</li>
+</ul>
+<h4 id="12-对象池-Object-Pool"><a href="#12-对象池-Object-Pool" class="headerlink" title="12. 对象池 (Object Pool)"></a>12. 对象池 (Object Pool)</h4><ul>
+<li>对象池模块提供对象缓存池的功能，避免频繁地创建和销毁各种游戏对象，提高游戏性能。除了 <code>Game Framework</code> 自身使用了对象池，开发者还可以很方便地创建和管理自己的对象池。</li>
+</ul>
+<h4 id="13-流程-Procedure"><a href="#13-流程-Procedure" class="headerlink" title="13. 流程 (Procedure)"></a>13. 流程 (Procedure)</h4><ul>
+<li>流程模块是贯穿游戏运行时整个生命周期的有限状态机。通过流程将不同的游戏状态进行解耦是一个非常好的习惯。对于不同类型的游戏，可以根据需要定制各种流程。</li>
+</ul>
+<h4 id="14-资源-Resource"><a href="#14-资源-Resource" class="headerlink" title="14. 资源 (Resource)"></a>14. 资源 (Resource)</h4><ul>
+<li>资源模块提供了一套完整的异步加载资源体系，避免使用同步加载方式。这个模块只提供了异步加载资源的接口，并支持默认的内存管理策略。</li>
+</ul>
+<h4 id="15-场景-Scene"><a href="#15-场景-Scene" class="headerlink" title="15. 场景 (Scene)"></a>15. 场景 (Scene)</h4><ul>
+<li>场景模块提供场景管理的功能，可以同时加载多个场景，也可以随时卸载任何一个场景，从而很容易地实现场景的分部加载。</li>
+</ul>
+<h4 id="16-配置-Setting"><a href="#16-配置-Setting" class="headerlink" title="16. 配置 (Setting)"></a>16. 配置 (Setting)</h4><ul>
+<li>配置模块以键值对的形式存储玩家数据，对 <code>UnityEngine.PlayerPrefs</code> 进行封装，也可以将这些数据直接存储在磁盘上。</li>
+</ul>
+<h4 id="17-声音-Sound"><a href="#17-声音-Sound" class="headerlink" title="17. 声音 (Sound)"></a>17. 声音 (Sound)</h4><ul>
+<li>声音模块提供管理声音和声音组的功能，开发者可以自定义一个声音的音量、是 2D 声音还是 3D 声音，甚至是直接绑定到某个实体上跟随实体移动。</li>
+</ul>
+<h4 id="18-界面-UI"><a href="#18-界面-UI" class="headerlink" title="18. 界面 (UI)"></a>18. 界面 (UI)</h4><ul>
+<li>界面模块提供管理界面和界面组的功能，如显示隐藏界面、激活界面、改变界面层级等。无论使用 Unity 内置的 uGUI 还是其他类型的 UI 插件，只要派生自 <code>UIFormLogic</code> 类并实现自己的界面类即可使用。</li>
+</ul>
+<h4 id="19-Web-请求-Web-Request"><a href="#19-Web-请求-Web-Request" class="headerlink" title="19. Web 请求 (Web Request)"></a>19. Web 请求 (Web Request)</h4><ul>
+<li>Web 请求模块提供使用短连接的功能，可以用 Get 或者 Post 方法向服务器发送请求并获取响应数据，可指定允许几个 Web 请求器进行同时请求。</li>
+</ul>
+<hr>
+<p>因为模块比较多，所以我需要分模块来学习。</p>
+]]></content>
+      <categories>
+        <category>Gameframework</category>
+      </categories>
+      <tags>
+        <tag>游戏框架记录</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>UnityGameframework 整体架构</title>
+    <url>/2024/08/13/UnityGameframework-02/</url>
+    <content><![CDATA[<h3 id="Game-Framework-整体架构"><a href="#Game-Framework-整体架构" class="headerlink" title="Game Framework 整体架构"></a>Game Framework 整体架构</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/frameImg.png"
+                      alt="架构图"
+                ></p>
+]]></content>
+      <categories>
+        <category>Gameframework</category>
+      </categories>
+      <tags>
+        <tag>游戏框架记录</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity Gameframework 序言</title>
     <url>/2024/08/09/UnityGameframework_00/</url>
     <content><![CDATA[<h2 id="关于项目使用GameframeWork的记录"><a href="#关于项目使用GameframeWork的记录" class="headerlink" title="关于项目使用GameframeWork的记录"></a>关于项目使用GameframeWork的记录</h2><h3 id="为什么使用GameframeWork？"><a href="#为什么使用GameframeWork？" class="headerlink" title="为什么使用GameframeWork？"></a>为什么使用GameframeWork？</h3><ul>
@@ -46,16 +134,11 @@
 <li><strong>ET</strong> 则适合那些需要构建复杂的分布式系统、大型在线游戏的项目，特别是在服务端开发和高并发处理方面表现出色。</li>
 </ul>
 ]]></content>
+      <categories>
+        <category>Gameframework</category>
+      </categories>
       <tags>
-        <tag>Gameframework</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>UnityGameframework Base(基础和工具)</title>
-    <url>/2024/08/09/UnityGameframework-01/</url>
-    <content><![CDATA[]]></content>
-      <tags>
-        <tag>Gameframework</tag>
+        <tag>游戏框架记录</tag>
       </tags>
   </entry>
 </search>
