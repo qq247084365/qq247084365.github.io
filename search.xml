@@ -111,10 +111,10 @@
 <h3 id="UGF层"><a href="#UGF层" class="headerlink" title="UGF层"></a>UGF层</h3><h4 id="UGF层与GF层的关系"><a href="#UGF层与GF层的关系" class="headerlink" title="UGF层与GF层的关系"></a>UGF层与GF层的关系</h4><ul>
 <li>UGF层将模块组件化，实现需要依赖引擎功能的模块都存在一个XXXComponent类</li>
 </ul>
-<h5 id="-3"><a href="#-3" class="headerlink" title=""></a></h5><ul>
+<h4 id="-3"><a href="#-3" class="headerlink" title=""></a></h4><ul>
 <li>XXXCompnent 继承 GameFrameworkComponent 继承 MonoBehaviour</li>
 </ul>
-<h5 id="-4"><a href="#-4" class="headerlink" title=""></a></h5><ul>
+<h4 id="-4"><a href="#-4" class="headerlink" title=""></a></h4><ul>
 <li>GameFrameworkComponent 实现了Awake函数，在对象生命周期开始时注册该组件到GameEntry组件链表内并创建IXXXMananger的实例,且方便其他地方通过GameEntry访问Component</li>
 </ul>
 <h5 id="-5"><a href="#-5" class="headerlink" title=""></a></h5><ul>
@@ -137,6 +137,37 @@
 </ul>
 <h5 id="-11"><a href="#-11" class="headerlink" title=""></a></h5><ul>
 <li>结合UnityEditor扩展序列化模块属性到Inspector进行可视化配置</li>
+</ul>
+<h4 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h4><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/GF-UGF-Schedule.drawio.png"
+                      alt="alt text"
+                ></p>
+<ul>
+<li><p>Unity 场景中脚本必须继承MonoBehaviour,所有模块可以通过继承GameFrameworkComponent挂载到场景的对象中,而组件中属性也存在GameFramework中依赖的模块</p>
+</li>
+<li><p>游戏启动会检查场景中GameFrameworkComponent类型并执行Awake初始化</p>
+</li>
+</ul>
+<h5 id="-12"><a href="#-12" class="headerlink" title=""></a></h5><ul>
+<li>执行GameEntry.RegisterComponent注册当前组件到s_GameFrameworkComponents,方便通过GameEntry访问组件</li>
+</ul>
+<h5 id="-13"><a href="#-13" class="headerlink" title=""></a></h5><ul>
+<li>代码中是通过 GetModule&lt;T&gt; 获取模块,当GameFrameworkModule中s_GameFrameworkModules链表存在模块时会直接返回对应模块,如果不存在则通过反射创建</li>
+</ul>
+<h5 id="-14"><a href="#-14" class="headerlink" title=""></a></h5><ul>
+<li>实际上是调用 GetModule&lt;T&gt; 时设置了T的类型,而我们传入的是接口IXXXManager,源码中通过裁剪字符串获得当前模块类型,这可能也是规范命名的好处</li>
+</ul>
+<h5 id="-15"><a href="#-15" class="headerlink" title=""></a></h5><ul>
+<li>并不是所有组件里的模块都会在Awake中初始化，例如ResourceComponentAwake中只注册了组件，具体为什么后续再分析</li>
+</ul>
+<h5 id="-16"><a href="#-16" class="headerlink" title=""></a></h5><ul>
+<li>在Start中,框架初始化所有组件，前面说到GameFrameworkModule的模块都存在优先级属性Priority,优先级越高创建越早轮询就越早,其中某些模块会创建以及设置辅助器<details class="[red]" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>辅助器 </summary>
+              <div class='content'>
+              <ul><li><p><strong>简化代码</strong>：辅助器可以封装复杂的操作或常见的功能，使主逻辑代码更简洁。例如，提供常用的字符串操作、数据转换等功能。</p></li><li><p><strong>提升可读性</strong>：通过将常用的代码模式封装到辅助器中，可以提高代码的可读性和维护性，避免重复的代码块。</p></li><li><p><strong>增强功能</strong>：辅助器可以提供额外的功能，比如日志记录、配置管理或错误处理，增强主系统的功能。</p></li><li><p><strong>提高复用性</strong>：将通用功能提取到辅助器中，能够在多个地方复用，减少冗余代码。</p></li><li><p><strong>分离关注点</strong>：辅助器帮助将代码的不同职责分离，使主业务逻辑与具体的实现细节解耦。</p></li></ul>
+              </div>
+            </details></li>
 </ul>
 ]]></content>
       <categories>
