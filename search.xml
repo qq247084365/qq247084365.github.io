@@ -115,7 +115,7 @@
 <li>XXXCompnent 继承 GameFrameworkComponent 继承 MonoBehaviour</li>
 </ul>
 <h5 id="-4"><a href="#-4" class="headerlink" title=""></a></h5><ul>
-<li>GameFrameworkComponent 实现了Awake函数，在对象生命周期开始时注册该组件到GameEntry组件链表内并创建IXXXMananger的实例</li>
+<li>GameFrameworkComponent 实现了Awake函数，在对象生命周期开始时注册该组件到GameEntry组件链表内并创建IXXXMananger的实例,且方便其他地方通过GameEntry访问Component</li>
 </ul>
 <h5 id="-5"><a href="#-5" class="headerlink" title=""></a></h5><ul>
 <li>所有被注册到GameEntry内的组件都会在Basecomp中轮询组件的Update函数</li>
