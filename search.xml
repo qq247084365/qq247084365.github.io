@@ -272,8 +272,8 @@
       </tags>
   </entry>
   <entry>
-    <title>UnityGameframework 状态机</title>
-    <url>/2024/08/16/UnityGameframework-Fsm/</url>
+    <title>UnityGameframework 流程模块</title>
+    <url>/2024/08/16/UnityGameframework-Procedure/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>Gameframework</category>
@@ -283,8 +283,8 @@
       </tags>
   </entry>
   <entry>
-    <title>UnityGameframework 流程模块</title>
-    <url>/2024/08/16/UnityGameframework-Procedure/</url>
+    <title>UnityGameframework 状态机</title>
+    <url>/2024/08/16/UnityGameframework-Fsm/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>Gameframework</category>
