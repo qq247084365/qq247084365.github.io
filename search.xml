@@ -69,7 +69,7 @@
 <a class="button  center large" href='https://github.com/EllanJiang/GameFramework/archive/refs/heads/master.zip' title='GameFramework（GF层）源码下载'><i class='fa-solid fa-download'></i> GameFramework（GF层）源码下载</a>
 <a class="button  center large" href='https://github.com/EllanJiang/UnityGameFramework/archive/refs/heads/master.zip' title='GameFramework（UGF层|将GF层封装成了动态链接库）示例下载'><i class='fa-solid fa-download'></i> GameFramework（UGF层|将GF层封装成了动态链接库）示例下载</a>
 
-<h3 id="参考：花桑大佬"><a href="#参考：花桑大佬" class="headerlink" title="参考：花桑大佬"></a>参考：花桑大佬</h3><a class="button  center large" href='https://www.drflower.top/' title='博客'><i class='fa fa-thumbs-up'></i> 博客</a>
+<h3 id="参考文档：花桑大佬"><a href="#参考文档：花桑大佬" class="headerlink" title="参考文档：花桑大佬"></a>参考文档：花桑大佬</h3><a class="button  center large" href='https://www.drflower.top/' title='博客'><i class='fa fa-thumbs-up'></i> 博客</a>
 
 <a class="button  center large" href='https://github.com/DrFlower/TowerDefense-GameFramework-Demo/archive/refs/heads/master.zip' title='塔防DEMO'><i class='fa fa-thumbs-up'></i> 塔防DEMO</a>
 
@@ -170,8 +170,46 @@
             </details></li>
 </ul>
 <h5 id="-17"><a href="#-17" class="headerlink" title=""></a></h5><ul>
-<li>Procedure 是框架中管理整个游戏流程的模块,跟别的组件不同的是，ProcedureComponent的Start函数通过协程执行并在初始化组件以及添加流程到状态机后延迟一帧启动状态机。</li>
+<li>Procedure 是框架中管理整个游戏流程的模块,跟别的组件不同的是，ProcedureComponent的Start函数通过协程执行并在初始化组件以及添加流程到状态机后延迟一帧启动流程。</li>
+<li>游戏启动的第二帧调用ProcedureManager.StartProcedure -&gt; ProcedureBase.OnEnter</li>
 </ul>
+<h4 id="GameFramework-Update流程"><a href="#GameFramework-Update流程" class="headerlink" title="GameFramework Update流程"></a>GameFramework Update流程</h4><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/GF-UGF-Update.drawio.png"
+                      alt="GameUpdate"
+                ></p>
+<h5 id="-18"><a href="#-18" class="headerlink" title=""></a></h5><ul>
+<li>引擎调用Monobehaviour的Update</li>
+</ul>
+<h5 id="-19"><a href="#-19" class="headerlink" title=""></a></h5><ul>
+<li>BaseComponent作为所有模块Update的入口，其中的Update方法按照模块优先级调用模块内的Update (GameFrameworkEntry类通过s_GameFrameworkModules保存了所有已创建的模块)</li>
+</ul>
+<h4 id="GameFramework-ShutDown流程"><a href="#GameFramework-ShutDown流程" class="headerlink" title="GameFramework ShutDown流程"></a>GameFramework ShutDown流程</h4><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/GF-UGF-Shutdown.drawio.png"
+                      alt="GameUpdate"
+                ></p>
+<ul>
+<li>业务层调用GameEntry.ShutDown(ShutdownType)</li>
+</ul>
+<details class="[red]" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>ShutdownType </summary>
+              <div class='content'>
+              <ul><li><p><strong>仅关闭游戏框架。</strong>：None &#x3D; 0</p></li><li><p><strong>关闭游戏框架并重启游戏。</strong>：Restart</p></li><li><p><strong>关闭游戏框架并退出游戏。</strong>：Quit</p></li></ul>
+              </div>
+            </details>
+
+<ul>
+<li>GameEntry.ShutDown调用了BaseComponent的Shutdown函数</li>
+<li>BaseComponent的Shutdown调用了Object.Destroy()销毁自身GameObject;(BaseComponent extend GameframeworkComponent)</li>
+<li>释放模块注册在GameEntry中的引用</li>
+<li>根据传入的ShutdownType执行LoadScene或Application.Quit</li>
+<li>Monobehavior 对象被执行Destroy后在当前帧结束后才会调用被执行对象的OnDestroy</li>
+<li>BaseComponent销毁事件 -&gt; 调用GameFrameworkEntry.Shutdown -&gt; 逆序遍历链表调用GameFrameworkModule.Shutdown</li>
+</ul>
+<h3 id="参考文档：花桑大佬"><a href="#参考文档：花桑大佬" class="headerlink" title="参考文档：花桑大佬"></a>参考文档：花桑大佬</h3><a class="button  center large" href='https://www.drflower.top/' title='博客'><i class='fa fa-thumbs-up'></i> 博客</a>
+
 ]]></content>
       <categories>
         <category>Gameframework</category>
