@@ -274,7 +274,13 @@
   <entry>
     <title>UnityGameframework 流程模块</title>
     <url>/2024/08/16/UnityGameframework-Procedure/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h1 id="Procedure-流程"><a href="#Procedure-流程" class="headerlink" title="Procedure 流程"></a>Procedure 流程</h1><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/GF-UGF-Procedure.drawio.png"
+                      alt="Procedure"
+                ></p>
+]]></content>
       <categories>
         <category>Gameframework</category>
       </categories>
@@ -379,72 +385,6 @@
 <li><code>InternalDestroyFsm(TypeNamePair typeNamePair)</code>: 内部方法，销毁指定 <code>TypeNamePair</code> 的有限状态机。</li>
 </ul>
 <h4 id="5-功能"><a href="#5-功能" class="headerlink" title="5. 功能"></a>5. 功能</h4><p><code>FsmManager</code> 是有限状态机的管理器，负责创建、获取、销毁和轮询有限状态机。它为游戏框架提供了一个集中的有限状态机管理功能，并确保各个状态机能够顺利运行和清理。</p>
-<h4 id="6-示例"><a href="#6-示例" class="headerlink" title="6. 示例"></a>6. 示例</h4><p>using GameFramework.Fsm;<br>using UnityGameFramework.Runtime;</p>
-<p>namespace StateCollection<br>{<br>    public class Idle : FsmState<Boss><br>    {<br>        protected override void OnInit(IFsm<Boss> fsm)<br>        {<br>            base.OnInit(fsm);<br>            Log.Info(“初始化怪物状态”);<br>        }</p>
-<pre><code>    protected override void OnEnter(IFsm&lt;Boss&gt; fsm)
-    &#123;
-        base.OnEnter(fsm);
-        Log.Info(&quot;进入待机状态&quot;);
-    &#125;
-&#125;
-
-public class Attack : FsmState&lt;Boss&gt;
-&#123;
-    protected override void OnInit(IFsm&lt;Boss&gt; fsm)
-    &#123;
-        base.OnInit(fsm);
-        Log.Info(&quot;初始化怪物攻击状态&quot;);
-    &#125;
-
-    protected override void OnEnter(IFsm&lt;Boss&gt; fsm)
-    &#123;
-        base.OnEnter(fsm);
-        Log.Info(&quot;进入攻击状态&quot;);
-    &#125;
-
-    protected override void OnUpdate(IFsm&lt;Boss&gt; fsm, float elapseSeconds, float realElapseSeconds)
-    &#123;
-        base.OnUpdate(fsm, elapseSeconds, realElapseSeconds);
-        fsm.Owner.Attack();
-    &#125;
-
-    protected override void OnLeave(IFsm&lt;Boss&gt; fsm, bool isShutdown)
-    &#123;
-        base.OnLeave(fsm, isShutdown);
-        fsm.Owner.TaskAReset();
-    &#125;
-&#125;
-</code></pre>
-<p>}</p>
-<p>using System.Collections.Generic;<br>using GameFramework.Fsm;<br>using StateCollection;<br>using UnityEngine;<br>using UnityGameFramework.Runtime;</p>
-<p>public class Boss : MonoBehaviour<br>{</p>
-<pre><code>public IFsm&lt;Boss&gt; fsm;
-
-/// &lt;summary&gt;
-/// Awake is called when the script instance is being loaded.
-/// &lt;/summary&gt;
-void Awake()
-&#123;
-    // new Idle(),
-    //     new Attack(),
-    //     new TaskAReset()
-    GameEntry.GetComponent&lt;FsmComponent&gt;().CreateFsm(this,new List&lt;FsmState&lt;Boss&gt;&gt;()&#123;
-        new Idle(),
-        new Attack()
-    &#125;);
-&#125;
-
-public void Attack()
-&#123;
-    Log.Info(&quot;发射发射发射！！！！&quot;);
-&#125;
-
-public void TaskAReset()
-&#123;
-    Log.Info(&quot;休息休息休息！！！！&quot;);
-&#125;
-</code></pre>
-<p>}</p>
 ]]></content>
       <categories>
         <category>Gameframework</category>
