@@ -274,12 +274,45 @@
   <entry>
     <title>UnityGameframework 流程模块</title>
     <url>/2024/08/16/UnityGameframework-Procedure/</url>
-    <content><![CDATA[<h1 id="Procedure-流程"><a href="#Procedure-流程" class="headerlink" title="Procedure 流程"></a>Procedure 流程</h1><p><img  
+    <content><![CDATA[<h2 id="Procedure-流程"><a href="#Procedure-流程" class="headerlink" title="Procedure 流程"></a>Procedure 流程</h2><p><img  
                      lazyload
                      src="/images/loading.svg"
                      data-src="/../Image/GF-UGF-Procedure.drawio.png"
-                      alt="Procedure"
+                      alt="GameProcedure"
                 ></p>
+<h2 id="GF流程模块"><a href="#GF流程模块" class="headerlink" title="GF流程模块"></a>GF流程模块</h2><ul>
+<li>流程在实现上其实是对有限状态机的一个封装，这也是为什么先看状态机的实现，而不是先看流程模块</li>
+</ul>
+<h2 id="GF官方定义（来自Github介绍）"><a href="#GF官方定义（来自Github介绍）" class="headerlink" title="GF官方定义（来自Github介绍）"></a>GF官方定义（来自Github介绍）</h2><ul>
+<li>是贯穿游戏运行时整个生命周期的有限状态机。通过流程，将不同的游戏状态进行解耦将是一个非常好的习惯。对于网络游戏，你可能需要如检查资源流程、更新资源流程、检查服务器列表流程、选择服务器流程、登录服务器流程、创建角色流程等流程，而对于单机游戏，你可能需要在游戏选择菜单流程和游戏实际玩法流程之间做切换。如果想增加流程，只要派生自 ProcedureBase 类并实现自己的流程类即可使用</li>
+</ul>
+<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
+<li>通过流程模块会把游戏过程中不同的状态管理起来，每个流程都继承了FSM状态基类，原理虽然很简单，但是可以很好的解耦每一个流程，划分所有的状态，在花桑大佬的文章中还提到我们可以构建一棵流程树，通过不同环境执行不同流程</li>
+</ul>
+<h2 id="流程基类-ProcedureBase"><a href="#流程基类-ProcedureBase" class="headerlink" title="流程基类 ProcedureBase"></a>流程基类 ProcedureBase</h2><ul>
+<li>ProcedureBase类作为流程的基类，属于一个抽象类，继承自FsmState,限定了持有者只能是IProcedureManager类型，通过父类约束子类不允许持有者存在IProcedureMananger以外类型</li>
+</ul>
+<h2 id="流程管理器-ProcedureManager"><a href="#流程管理器-ProcedureManager" class="headerlink" title="流程管理器 ProcedureManager"></a>流程管理器 ProcedureManager</h2><ul>
+<li>m_FsmManager 通过Initialize初始化状态管理器属性,调用时传入有限状态机管理器以及流程列表</li>
+<li>m_ProcedureFsm 在初始化时通过IFsm提供的CreateFsm传入持有者以及流程类创建一个新的流程</li>
+<li><B>管理器还提供了StartProcedure来启动流程,启动指定的流程</B></li>
+</ul>
+<h2 id="流程组件-ProcedureComponent"><a href="#流程组件-ProcedureComponent" class="headerlink" title="流程组件 ProcedureComponent"></a>流程组件 ProcedureComponent</h2><ul>
+<li>Start中通过反射创建流程列表里流程的实例</li>
+<li>通过Manager提供的Initialize初始化流程列表并通过管理器管理起来</li>
+<li>并延迟一帧执行当前指定的流程</li>
+</ul>
+<h2 id="编辑器可视化配置-ProcedureComponentInsepctor"><a href="#编辑器可视化配置-ProcedureComponentInsepctor" class="headerlink" title="编辑器可视化配置 ProcedureComponentInsepctor"></a>编辑器可视化配置 ProcedureComponentInsepctor</h2><ul>
+<li>代码修改后编辑器会重新编译代码</li>
+<li>脚本通过加载程序集遍历程序集里的类且收集ProcedureBase</li>
+<li>显示在挂载了ProcedureComponent组件的编辑器面板里</li>
+</ul>
+<details class="[red]" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>Unity DLL 编译流程 </summary>
+              <div class='content'>
+              <p>在 Unity 中，脚本会根据它们的放置位置和用途编译成不同的程序集（Assembly）。Unity 的编译过程是自动管理的，并且会根据项目的配置和脚本的路径来决定脚本编译到哪些程序集里。下面详细介绍 Unity 的程序集编译过程。</p><p class='h4' id="1-编译分组"><a href="#1-编译分组" class="headerlink" title="1. 编译分组"></a>1. 编译分组</h4><p>Unity 会将脚本根据放置的位置分为不同的编译分组，主要包括：</p><h4 id="Runtime-Assemblies"><a href="#Runtime-Assemblies" class="headerlink" title="Runtime Assemblies"></a>Runtime Assemblies</h4><ul><li><strong><code>Assembly-CSharp.dll</code></strong>: 包含 <code>Assets</code> 目录下的大部分运行时脚本。</li><li><strong><code>Assembly-CSharp-firstpass.dll</code></strong>: 包含 <code>Assets/Plugins</code> 下的运行时脚本，优先编译。这些脚本通常是第三方库或插件的一部分。</li><li><strong><code>Assembly-CSharp-Editor.dll</code></strong>: 包含 <code>Assets/Editor</code> 下的编辑器脚本，只有在 Unity 编辑器中使用。</li></ul><h4 id="Editor-Assemblies"><a href="#Editor-Assemblies" class="headerlink" title="Editor Assemblies"></a>Editor Assemblies</h4><ul><li><strong><code>Assembly-CSharp-Editor-firstpass.dll</code></strong>: 包含 <code>Assets/Plugins/Editor</code> 下的脚本。用于在编辑器中运行的插件代码。</li></ul><p>这些程序集的划分允许 Unity 对不同用途的脚本进行独立的编译，这样可以优化编译时间，并确保编辑器代码不会在运行时构建中包含。</p><h4 id="2-编译流程"><a href="#2-编译流程" class="headerlink" title="2. 编译流程"></a>2. 编译流程</h4><p>Unity 的编译流程如下：</p><h4 id="脚本的扫描"><a href="#脚本的扫描" class="headerlink" title="脚本的扫描"></a>脚本的扫描</h4><ul><li>Unity 会扫描 <code>Assets</code> 目录及其子目录，识别脚本文件（如 <code>.cs</code>、<code>.js</code>、<code>.boo</code>，尽管 Boo 和 UnityScript 已被弃用）。这些脚本会被分类到不同的编译分组中。</li></ul><h4 id="按顺序编译"><a href="#按顺序编译" class="headerlink" title="按顺序编译"></a>按顺序编译</h4><ul><li>编译是按顺序进行的，优先编译 <code>Plugins</code> 文件夹中的内容。这意味着 <code>Plugins</code> 中的程序集会先编译，供其他脚本使用。</li><li>接着编译 <code>Standard Assets</code> 文件夹中的脚本，确保这些标准资源可以被 <code>Assets</code> 目录中的脚本引用。</li><li>最后编译 <code>Assets</code> 目录中的其他脚本和 <code>Editor</code> 脚本。</li></ul><h4 id="程序集生成"><a href="#程序集生成" class="headerlink" title="程序集生成"></a>程序集生成</h4><ul><li>每个编译分组中的脚本会被编译成一个单独的 <code>.dll</code> 文件。例如，<code>Assets</code> 中的运行时脚本会被编译为 <code>Assembly-CSharp.dll</code>。</li><li>这些程序集会被 Unity 用于运行时或编辑器内使用。</li></ul><h4 id="编译缓存"><a href="#编译缓存" class="headerlink" title="编译缓存"></a>编译缓存</h4><ul><li>Unity 使用增量编译，当你修改某个脚本时，Unity 只会重新编译受影响的脚本或程序集，而不是重新编译整个项目。这样可以显著减少编译时间。</li></ul><h4 id="3-自定义程序集（Assembly-Definitions）"><a href="#3-自定义程序集（Assembly-Definitions）" class="headerlink" title="3. 自定义程序集（Assembly Definitions）"></a>3. 自定义程序集（Assembly Definitions）</h4><p>在 Unity 2017.3 之后，Unity 引入了 <strong>Assembly Definition Files</strong>（<code>.asmdef</code>），允许开发者更精确地控制脚本的编译方式和程序集的生成。使用 <code>.asmdef</code> 文件，你可以：</p><ul><li>创建自定义程序集，定义某些脚本应编译成哪个程序集。</li><li>指定程序集之间的依赖关系。</li><li>限制脚本的编译平台。</li><li>控制程序集的命名和版本信息。</li></ul><p>通过 <code>.asmdef</code> 文件，开发者可以更好地组织代码结构，提高编译速度，并减少不必要的依赖关系。</p><h4 id="4-编译目标"><a href="#4-编译目标" class="headerlink" title="4. 编译目标"></a>4. 编译目标</h4><p>Unity 的编译过程不仅生成适用于编辑器的程序集，还会根据你选择的构建目标（如 Android、iOS、Windows、WebGL 等）生成适合目标平台的二进制文件。对于某些平台，如 IL2CPP，Unity 会将 C# 代码编译为 C++，然后再生成目标平台的可执行文件。</p><p class='h3' id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Unity 的程序集编译过程是自动化和分组化的，根据脚本的位置和用途，Unity 会生成不同的程序集，这些程序集对应于项目中的不同功能模块。对于更高级的编译控制，你可以使用 <strong>Assembly Definition Files</strong> 来创建自定义程序集并管理它们之间的依赖关系。</p>
+              </div>
+            </details>
+
 ]]></content>
       <categories>
         <category>Gameframework</category>
@@ -388,6 +421,19 @@
 ]]></content>
       <categories>
         <category>Gameframework</category>
+      </categories>
+      <tags>
+        <tag>游戏框架记录</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>UnityYooAsset+UOS</title>
+    <url>/2024/08/28/UnityYooAsset/</url>
+    <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>YooAsset是一套用于Unity3D的资源管理系统，用于帮助研发团队快速部署和交付游戏。</p>
+<p>它可以满足商业化游戏的各类需求，并且经历多款百万DAU游戏产品的验证。</p>
+]]></content>
+      <categories>
+        <category>Gameframework-YooAsset</category>
       </categories>
       <tags>
         <tag>游戏框架记录</tag>
