@@ -431,6 +431,23 @@
     <url>/2024/08/28/UnityYooAsset/</url>
     <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>YooAsset是一套用于Unity3D的资源管理系统，用于帮助研发团队快速部署和交付游戏。</p>
 <p>它可以满足商业化游戏的各类需求，并且经历多款百万DAU游戏产品的验证。</p>
+<a class="button  center large" href='https://www.yooasset.com/docs/guide-editor/QuickStart' title='YooAsset官方文档'><i class='fa fa-thumbs-up'></i> YooAsset官方文档</a>
+
+<h2 id="全局配置文件"><a href="#全局配置文件" class="headerlink" title="全局配置文件"></a>全局配置文件</h2><ul>
+<li>通过右键-&gt;Create-&gt;YooAsset-&gt;Create Setting创建</li>
+<li>需要放置在Resources目录下</li>
+<li>配置说明:<br><strong>Manifest File Name : 清单文件名称</strong><br><strong>Default Yoo Folder Name : 沙盒目录和内置目录的文件夹名称</strong></li>
+</ul>
+<h2 id="资源配置"><a href="#资源配置" class="headerlink" title="资源配置"></a>资源配置</h2><ul>
+<li>工具栏-&gt;YooAsset-&gt;AssetBundle Collector (资源配置界面)</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityYooAsset/image.png"
+                      alt="资源配置界面"
+                ></p>
+<p>GlobalSetting</p>
 ]]></content>
       <categories>
         <category>Gameframework-YooAsset</category>
