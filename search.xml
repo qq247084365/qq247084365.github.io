@@ -605,6 +605,21 @@
                      data-src="/../Image/UnityYooAsset/imag2e.png"
                       alt="资源构建"
                 ></p>
+<h3 id="Build-Package"><a href="#Build-Package" class="headerlink" title="Build Package"></a>Build Package</h3><ul>
+<li>资源包裹的列表，下拉选择要构建的资源包裹</li>
+</ul>
+<h3 id="Build-Pipeline"><a href="#Build-Pipeline" class="headerlink" title="Build Pipeline"></a>Build Pipeline</h3><p><strong>构建管线的列表，下拉选择要使用的构建管线：</strong></p>
+<div class="tabs" id="tab-packrule"><ul class="nav-tabs"><li class="tab active"><a class="#packrule-1">BuiltinBuildPipeline</a></li><li class="tab"><a class="#packrule-2">ScriptableBuildPipeline</a></li><li class="tab"><a class="#packrule-3">PackRawFile</a></li></ul><div class="tab-content"><div class="tab-pane active" id="packrule-1"><ul>
+<li>传统的内置构建管线</li>
+</ul></div><div class="tab-pane" id="packrule-2"><ul>
+<li>Unity 后续推出的可编程构建管线，和可编程渲染管线一样，让开发者有能力控制打包流程</li>
+</ul></div><div class="tab-pane" id="packrule-3"><ul>
+<li>RawFileBuildPipeline 原生文件构建管线，用与构建Unity引擎无法识别的资源类型，例如FMOD的音频文件（bank后缀格式）</li>
+</ul></div></div></div>
+
+<ul>
+<li><strong>注意： 从Unity2021.3版本开始，推荐使用ScriptableBuildPipeline构建管线</strong></li>
+</ul>
 ]]></content>
       <categories>
         <category>Gameframework-YooAsset</category>
