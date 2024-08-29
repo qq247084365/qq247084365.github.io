@@ -427,7 +427,7 @@
       </tags>
   </entry>
   <entry>
-    <title>UnityYooAsset+UOS</title>
+    <title>UnityYooAsset</title>
     <url>/2024/08/28/UnityYooAsset/</url>
     <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>YooAsset是一套用于Unity3D的资源管理系统，用于帮助研发团队快速部署和交付游戏。</p>
 <p>它可以满足商业化游戏的各类需求，并且经历多款百万DAU游戏产品的验证。</p>
@@ -609,17 +609,131 @@
 <li>资源包裹的列表，下拉选择要构建的资源包裹</li>
 </ul>
 <h3 id="Build-Pipeline"><a href="#Build-Pipeline" class="headerlink" title="Build Pipeline"></a>Build Pipeline</h3><p><strong>构建管线的列表，下拉选择要使用的构建管线：</strong></p>
-<div class="tabs" id="tab-packrule"><ul class="nav-tabs"><li class="tab active"><a class="#packrule-1">BuiltinBuildPipeline</a></li><li class="tab"><a class="#packrule-2">ScriptableBuildPipeline</a></li><li class="tab"><a class="#packrule-3">PackRawFile</a></li></ul><div class="tab-content"><div class="tab-pane active" id="packrule-1"><ul>
+<div class="tabs" id="tab-build-mode"><ul class="nav-tabs"><li class="tab active"><a class="#build-mode-1">BuiltinBuildPipeline</a></li><li class="tab"><a class="#build-mode-2">ScriptableBuildPipeline</a></li><li class="tab"><a class="#build-mode-3">PackRawFile</a></li></ul><div class="tab-content"><div class="tab-pane active" id="build-mode-1"><ul>
 <li>传统的内置构建管线</li>
-</ul></div><div class="tab-pane" id="packrule-2"><ul>
+</ul></div><div class="tab-pane" id="build-mode-2"><ul>
 <li>Unity 后续推出的可编程构建管线，和可编程渲染管线一样，让开发者有能力控制打包流程</li>
-</ul></div><div class="tab-pane" id="packrule-3"><ul>
+</ul></div><div class="tab-pane" id="build-mode-3"><ul>
 <li>RawFileBuildPipeline 原生文件构建管线，用与构建Unity引擎无法识别的资源类型，例如FMOD的音频文件（bank后缀格式）</li>
 </ul></div></div></div>
 
 <ul>
 <li><strong>注意： 从Unity2021.3版本开始，推荐使用ScriptableBuildPipeline构建管线</strong></li>
 </ul>
+<h3 id="Build-Output"><a href="#Build-Output" class="headerlink" title="Build Output"></a>Build Output</h3><ul>
+<li>构建输出的目录，会根据Unity编辑器当前切换的平台自动划分构建结果</li>
+</ul>
+<h3 id="Build-Version"><a href="#Build-Version" class="headerlink" title="Build Version"></a>Build Version</h3><ul>
+<li>构建的资源包版本</li>
+</ul>
+<h3 id="Build-Mode"><a href="#Build-Mode" class="headerlink" title="Build Mode"></a>Build Mode</h3><ul>
+<li>构建模式</li>
+</ul>
+<div class="tabs" id="tab-build-mode"><ul class="nav-tabs"><li class="tab active"><a class="#build-mode-1">ForceRebuild</a></li><li class="tab"><a class="#build-mode-2">IncrementalBuild</a></li><li class="tab"><a class="#build-mode-3">DryRunBuild</a></li><li class="tab"><a class="#build-mode-4">SimulateBuild</a></li></ul><div class="tab-content"><div class="tab-pane active" id="build-mode-1"><ul>
+<li>强制构建模式  会删除指定构建平台下的所有构建记录，重新构建所有资源包。</li>
+</ul></div><div class="tab-pane" id="build-mode-2"><ul>
+<li>增量构建模式  以上一次构建结果为基础，对于发生变化的资源进行增量构建。</li>
+</ul></div><div class="tab-pane" id="build-mode-3"><ul>
+<li>演练构建模式  在不生成AssetBundle文件的前提下，进行演练构建并快速生成构建报告和补丁清单。</li>
+</ul></div><div class="tab-pane" id="build-mode-4"><ul>
+<li>模拟构建模式  在编辑器下配合EditorSimulateMode运行模式，来模拟真实运行的环境。</li>
+</ul></div></div></div>
+
+<h3 id="Encryption"><a href="#Encryption" class="headerlink" title="Encryption"></a>Encryption</h3><ul>
+<li>加密类列表</li>
+</ul>
+<h3 id="Compression"><a href="#Compression" class="headerlink" title="Compression"></a>Compression</h3><ul>
+<li>资源包的压缩方式</li>
+</ul>
+<h3 id="File-Name-Style"><a href="#File-Name-Style" class="headerlink" title="File Name Style"></a>File Name Style</h3><ul>
+<li>输出的资源包文件名称样式</li>
+</ul>
+<div class="tabs" id="tab-packrule"><ul class="nav-tabs"><li class="tab active"><a class="#packrule-1">HashName</a></li><li class="tab"><a class="#packrule-2">BundleName</a></li><li class="tab"><a class="#packrule-3">BundleName_HashName</a></li></ul><div class="tab-content"><div class="tab-pane active" id="packrule-1"><ul>
+<li>HashName : 哈希值</li>
+</ul></div><div class="tab-pane" id="packrule-2"><ul>
+<li>BundleName : 资源包名</li>
+</ul></div><div class="tab-pane" id="packrule-3"><ul>
+<li>BundleName_HashName : 资源包名+哈希值</li>
+</ul></div></div></div>
+
+<h3 id="Copy-Buildin-File-Option"><a href="#Copy-Buildin-File-Option" class="headerlink" title="Copy Buildin File Option"></a>Copy Buildin File Option</h3><ul>
+<li>首包资源文件的拷贝方式</li>
+</ul>
+<div class="tabs" id="tab-copy-buildin-file-option"><ul class="nav-tabs"><li class="tab active"><a class="#copy-buildin-file-option-1">None</a></li><li class="tab"><a class="#copy-buildin-file-option-2">ClearAndCopyAll</a></li><li class="tab"><a class="#copy-buildin-file-option-3">ClearAndCopyByTags</a></li><li class="tab"><a class="#copy-buildin-file-option-4">OnlyCopyAll</a></li><li class="tab"><a class="#copy-buildin-file-option-5">OnlyCopyByTags</a></li></ul><div class="tab-content"><div class="tab-pane active" id="copy-buildin-file-option-1"><ul>
+<li>None：不拷贝任何文件</li>
+</ul></div><div class="tab-pane" id="copy-buildin-file-option-2"><ul>
+<li>ClearAndCopyAll：先清空已有文件，然后拷贝所有文件</li>
+</ul></div><div class="tab-pane" id="copy-buildin-file-option-3"><ul>
+<li>ClearAndCopyByTags：先清空已有文件，然后按照资源标签拷贝文件</li>
+</ul></div><div class="tab-pane" id="copy-buildin-file-option-4"><ul>
+<li>OnlyCopyAll：不清空已有文件，直接拷贝所有文件</li>
+</ul></div><div class="tab-pane" id="copy-buildin-file-option-5"><ul>
+<li>OnlyCopyByTags：不清空已有文件，直接按照资源标签拷贝文件</li>
+</ul></div></div></div>
+
+<h3 id="Click-Build-构建"><a href="#Click-Build-构建" class="headerlink" title="Click Build 构建"></a>Click Build 构建</h3><ul>
+<li>点击构建按钮会开始构建流程，构建流程分为多个节点顺序执行，如果某个节点发生错误，会导致构建失败。错误信息可以在控制台查看。</li>
+</ul>
+<h3 id="加密方法"><a href="#加密方法" class="headerlink" title="加密方法"></a>加密方法</h3><ul>
+<li>在Editor目录实现一个继承IEncryptionServices接口类</li>
+<li>加密支持三种方式：</li>
+</ul>
+<div class="tabs" id="tab-packrule"><ul class="nav-tabs"><li class="tab active"><a class="#packrule-1">LoadFromFileOffset</a></li><li class="tab"><a class="#packrule-2">LoadFromMemory</a></li><li class="tab"><a class="#packrule-3">LoadFromStream</a></li></ul><div class="tab-content"><div class="tab-pane active" id="packrule-1"><ul>
+<li>LoadFromFileOffset 通过文件偏移来解密加载</li>
+</ul></div><div class="tab-pane" id="packrule-2"><ul>
+<li>LoadFromMemory 通过文件内存来解密加载</li>
+</ul></div><div class="tab-pane" id="packrule-3"><ul>
+<li>LoadFromStream 通过文件流来解密加载</li>
+</ul></div></div></div>
+
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 文件偏移加密方式</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">FileOffsetEncryption</span> : <span class="title">IEncryptionServices</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> EncryptResult <span class="title">Encrypt</span>(<span class="params">EncryptFileInfo fileInfo</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 注意：只对音频资源包加密</span></span><br><span class="line">        <span class="keyword">if</span> (fileInfo.BundleName.Contains(<span class="string">&quot;_gameres_audio&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">int</span> offset = <span class="number">32</span>;</span><br><span class="line">            <span class="built_in">byte</span>[] fileData = File.ReadAllBytes(fileInfo.FilePath);</span><br><span class="line">            <span class="keyword">var</span> encryptedData = <span class="keyword">new</span> <span class="built_in">byte</span>[fileData.Length + offset];</span><br><span class="line">            Buffer.BlockCopy(fileData, <span class="number">0</span>, encryptedData, offset, fileData.Length);</span><br><span class="line"></span><br><span class="line">            EncryptResult result = <span class="keyword">new</span> EncryptResult();</span><br><span class="line">            result.Encrypted = <span class="literal">true</span>;</span><br><span class="line">            result.EncryptedData = encryptedData;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            EncryptResult result = <span class="keyword">new</span> EncryptResult();</span><br><span class="line">            result.Encrypted = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="补丁包"><a href="#补丁包" class="headerlink" title="补丁包"></a>补丁包</h3><ul>
+<li><p>构建成功后会在输出目录下找到补丁包文件夹，该文件夹名称为本次构建时指定的资源版本号</p>
+</li>
+<li><p>补丁包文件夹里包含补丁清单文件，资源包文件，构建报告文件等</p>
+</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityYooAsset/image3e.png"
+                      alt="补丁包"
+                ></p>
+<h3 id="补丁清单"><a href="#补丁清单" class="headerlink" title="补丁清单"></a>补丁清单</h3><ul>
+<li>补丁清单文件是上图中以PackageManifest开头命名的文件</li>
+</ul>
+<div class="tabs" id="tab-packrule"><ul class="nav-tabs"><li class="tab active"><a class="#packrule-1">xxx.hash</a></li><li class="tab"><a class="#packrule-2">xxx.json</a></li><li class="tab"><a class="#packrule-3">xxx.bytes</a></li></ul><div class="tab-content"><div class="tab-pane active" id="packrule-1"><ul>
+<li>PackageManifest_DefaultPackage_xxx.hash 记录了补丁清单文件的哈希值</li>
+</ul></div><div class="tab-pane" id="packrule-2"><ul>
+<li>PackageManifest_DefaultPackage_xxx.json 该文件为Json文本格式，主要用于开发者预览信息</li>
+</ul></div><div class="tab-pane" id="packrule-3"><ul>
+<li>PackageManifest_DefaultPackage_xxx.bytes 该文件为二进制格式，主要用于程序内读取加载</li>
+</ul></div></div></div>
+
+<h3 id="构建报告"><a href="#构建报告" class="headerlink" title="构建报告"></a>构建报告</h3><ul>
+<li><p>BuildReport_DefaultPackage_xxx.json文件为构建报告文件。可以通过构建报告窗口查看本次构建的详细信息</p>
+</li>
+<li><p>工具栏 -&gt; YooAsset -&gt; Asset Reporter 打开窗口并导入报告</p>
+</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityYooAsset/image4e.png"
+                      alt="构建报告"
+                ></p>
+<h3 id="重要概念"><a href="#重要概念" class="headerlink" title="重要概念"></a>重要概念</h3><div class="tabs" id="tab-packrule"><ul class="nav-tabs"><li class="tab active"><a class="#packrule-1">增量构建</a></li><li class="tab"><a class="#packrule-2">强制构建</a></li><li class="tab"><a class="#packrule-3">首包资源</a></li><li class="tab"><a class="#packrule-4">补丁包</a></li></ul><div class="tab-content"><div class="tab-pane active" id="packrule-1"><ul>
+<li>增量构建是在Unity的帮助下实现的一种快速打包机制。主要是利用资源构建相关的缓存文件来避免二次构建，以此来提高打包效率。</li>
+</ul></div><div class="tab-pane" id="packrule-2"><ul>
+<li>强制构建是每次构建之前，都会清空之前构建的所有缓存文件，以此来重新构建资源包。</li>
+</ul></div><div class="tab-pane" id="packrule-3"><ul>
+<li>在构建应用程序的时候，我们希望将某些资源打进首包里，首包资源拷贝至StreamingAssets&#x2F;yoo&#x2F;目录下。首包资源如果发生变化，也可以通过热更新来更新资源。</li>
+</ul></div><div class="tab-pane" id="packrule-4"><ul>
+<li>无论是通过增量构建还是强制构建，在构建完成后都会生成一个以包裹版本（PackageVersion）命名的文件夹，我们把这个文件夹统称为补丁包。补丁包里包含了游戏运行需要的所有资源，我们可以无脑的将补丁包内容覆盖到CDN目录下，也可以通过编写差异分析工具，来筛选出和线上最新版本之间的差异文件，然后将差异文件上传到CDN目录里。</li>
+</ul></div></div></div>
+
+<a class="button  center large" href='https://www.yooasset.com/docs/api/' title='API Documentation'><i class='fa fa-thumbs-up'></i> API Documentation</a>
 ]]></content>
       <categories>
         <category>Gameframework-YooAsset</category>
