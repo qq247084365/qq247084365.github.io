@@ -796,6 +796,38 @@
 </ul>
 <div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>单机运行模式加载资源</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 初始化资源系统</span></span><br><span class="line">    YooAssets.Initialize();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化默认资源包</span></span><br><span class="line">    <span class="keyword">var</span> package = InitializePackage();</span><br><span class="line"></span><br><span class="line">    StartCoroutine(OfflineInitializeYooAsset(package));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> IEnumerator <span class="title">OfflineInitializeYooAsset</span>(<span class="params">ResourcePackage package</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> 单机运行模式的特定初始化逻辑</span></span><br><span class="line">    <span class="keyword">var</span> buildinFileSystem = FileSystemParameters.CreateDefaultBuildinFileSystemParameters();</span><br><span class="line">    <span class="keyword">var</span> initParameters = <span class="keyword">new</span> OfflinePlayModeParameters();</span><br><span class="line">    initParameters.BuildinFileSystemParameters = buildinFileSystem;</span><br><span class="line">    <span class="keyword">var</span> initOperation = package.InitializeAsync(initParameters);</span><br><span class="line">    <span class="keyword">yield</span> <span class="keyword">return</span> initOperation;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (initOperation.Status == EOperationStatus.Succeed)</span><br><span class="line">        Debug.Log(<span class="string">&quot;资源包初始化成功！&quot;</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        Debug.LogError(<span class="string">$&quot;资源包初始化失败：<span class="subst">&#123;initOperation.Error&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 请求并加载资源</span></span><br><span class="line">    <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">RequestAndLoadAssets</span>(<span class="params">package</span>)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
 
+<ul>
+<li>单机运行模式提供了继承InitializeParameters的OfflinePlayModeParameters类用于初始化资源包</li>
+<li>与编辑器模式一样，初始化资源包后，都需要请求包版本和更新包清单</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>联机运行模式初始化逻辑</span></figcaption><table><tr><td class="code"><pre><span class="line">    <span class="comment">// 联机运行模式初始化资源包</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> IEnumerator <span class="title">HostInitializeYooAsset</span>(<span class="params">ResourcePackage package</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> 联机运行模式初始化逻辑</span></span><br><span class="line">    <span class="comment">// // 注意：GameQueryServices.cs 太空战机的脚本类，详细见StreamingAssetsHelper.cs</span></span><br><span class="line">    <span class="built_in">string</span> defaultHostServer = <span class="string">&quot;文件服务器地址/StandaloneWindows64/DefaultPackage/2024-09-02-925&quot;</span>;<span class="comment">//默认文件服务器</span></span><br><span class="line">    <span class="built_in">string</span> fallbackHostServer = <span class="string">&quot;文件服务器地址/StandaloneWindows64/DefaultPackage/2024-09-02-925&quot;</span>;<span class="comment">//备用文件服务器</span></span><br><span class="line">    IRemoteServices remoteServices = <span class="keyword">new</span> RemoteServicesV2(defaultHostServer, fallbackHostServer);</span><br><span class="line">    <span class="keyword">var</span> cacheFileSystem = FileSystemParameters.CreateDefaultCacheFileSystemParameters(remoteServices);</span><br><span class="line">    <span class="keyword">var</span> buildinFileSystem = FileSystemParameters.CreateDefaultBuildinFileSystemParameters();</span><br><span class="line">    <span class="keyword">var</span> initParameters = <span class="keyword">new</span> HostPlayModeParameters();</span><br><span class="line">    initParameters.BuildinFileSystemParameters = buildinFileSystem;</span><br><span class="line">    initParameters.CacheFileSystemParameters = cacheFileSystem;</span><br><span class="line">    <span class="keyword">var</span> initOperation = InitializePackageAsync(package,initParameters);</span><br><span class="line">    <span class="keyword">yield</span> <span class="keyword">return</span> initOperation;</span><br><span class="line">    <span class="comment">// 初始化资源包</span></span><br><span class="line">    <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">RequestAndLoadAssets</span>(<span class="params">package</span>)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>流程：</strong></p>
+<ul>
+<li><p>RemoteServices需要实现IRemoteServices接口</p>
+</li>
+<li><p>创建默认的缓存文件系统参数</p>
+</li>
+<li><p>创建默认的内置文件系统参数</p>
+</li>
+<li><p>初始化联机运行模式的参数</p>
+</li>
+<li><p>初始化资源包</p>
+</li>
+<li><p>与编辑器模式一样，初始化资源包后，都需要请求包版本和更新包清单</p>
+</li>
+</ul>
+<p><strong>加密：</strong></p>
+<ul>
+<li>在Editor目录下实现一个继承IEncryptionServices接口的类。</li>
+</ul>
+<div class="tabs" id="tab-eplaymode"><ul class="nav-tabs"><li class="tab active"><a class="#eplaymode-1">LoadFromFileOffset</a></li><li class="tab"><a class="#eplaymode-2">LoadFromMemory</a></li><li class="tab"><a class="#eplaymode-3">LoadFromStream</a></li></ul><div class="tab-content"><div class="tab-pane active" id="eplaymode-1"><ul>
+<li>LoadFromFileOffset 通过文件偏移来解密加载</li>
+</ul></div><div class="tab-pane" id="eplaymode-2"><ul>
+<li>LoadFromMemory 通过文件内存来解密加载</li>
+</ul></div><div class="tab-pane" id="eplaymode-3"><ul>
+<li>LoadFromStream 通过文件流来解密加载</li>
+</ul></div></div></div>
 
 <p><strong>注意：</strong></p>
 <ul>
