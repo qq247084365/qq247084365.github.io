@@ -427,7 +427,7 @@
       </tags>
   </entry>
   <entry>
-    <title>UnityYooAsset-实践</title>
+    <title>Unity-YooAsset-实践</title>
     <url>/2024/08/30/UnityYooAsset-instances/</url>
     <content><![CDATA[<h2 id="YooAsset-初始化"><a href="#YooAsset-初始化" class="headerlink" title="YooAsset 初始化"></a>YooAsset 初始化</h2><ul>
 <li>加载资源的模式有四种，逐个逐个来</li>
@@ -500,7 +500,7 @@
 <ul>
 <li>在Editor目录下实现一个继承IEncryptionServices接口的类。</li>
 </ul>
-<p><strong>加密支持三种方式：</strong></p>
+<p><strong>解密支持三种方式：</strong></p>
 <div class="tabs" id="tab-eplaymode"><ul class="nav-tabs"><li class="tab active"><a class="#eplaymode-1">LoadFromFileOffset</a></li><li class="tab"><a class="#eplaymode-2">LoadFromMemory</a></li><li class="tab"><a class="#eplaymode-3">LoadFromStream</a></li></ul><div class="tab-content"><div class="tab-pane active" id="eplaymode-1"><ul>
 <li>LoadFromFileOffset 通过文件偏移来解密加载</li>
 </ul></div><div class="tab-pane" id="eplaymode-2"><ul>
@@ -517,7 +517,10 @@
 </ul>
 <div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>资源文件偏移加载解密类</span></figcaption><table><tr><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">class</span> <span class="title">FileOffsetDecryption</span> : <span class="title">IDecryptionServices</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// AssetBundle解密方法</span></span><br><span class="line">    AssetBundle IDecryptionServices.LoadAssetBundle(DecryptFileInfo fileInfo, <span class="keyword">out</span> Stream managedStream)</span><br><span class="line">    &#123;</span><br><span class="line">        managedStream = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">return</span> AssetBundle.LoadFromFile(fileInfo.FileLoadPath, fileInfo.ConentCRC, GetFileOffset());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// AssetBundle解密方法</span></span><br><span class="line">    AssetBundleCreateRequest IDecryptionServices.LoadAssetBundleAsync(DecryptFileInfo fileInfo, <span class="keyword">out</span> Stream managedStream)</span><br><span class="line">    &#123;</span><br><span class="line">        managedStream = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">return</span> AssetBundle.LoadFromFileAsync(fileInfo.FileLoadPath, fileInfo.ConentCRC, GetFileOffset());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 原生文件解密方法</span></span><br><span class="line">    <span class="built_in">byte</span>[] IDecryptionServices.ReadFileData(DecryptFileInfo fileInfo)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> System.NotImplementedException();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 原生文件解密方法</span></span><br><span class="line">    <span class="built_in">string</span> IDecryptionServices.ReadFileText(DecryptFileInfo fileInfo)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> System.NotImplementedException();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">ulong</span> <span class="title">GetFileOffset</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">32</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
 
+<p><strong>加密解密类使用:</strong></p>
 <ul>
+<li>加密 : 打包时选择</li>
+<li>解密 : 以联机模式作为示例-&gt;FileSystemParameters.CreateDefaultCacheFileSystemParameters(remoteServices,new 加密类())</li>
 <li></li>
 </ul>
 <p><strong>注意：</strong></p>
@@ -533,13 +536,12 @@
 <ul>
 <li>作为刚接触YooAsset的人还是需要导入源码，然后看示例项目，单看文档上的脚本并不能很直观的理解，例如在编辑器中如何模拟构建的，实际上内置管线通过反射调用了编辑器调用的YooAsset.Editor.AssetBundleSimulateBuilder.SimulateBuild()</li>
 </ul>
-<a class="button  center large" href='https://github.com/tuyoogame/YooAsset/releases' title='YooAsset源码地址'><i class='fa fa-thumbs-up'></i> YooAsset源码地址</a>
-]]></content>
+<a class="button  center large" href='https://github.com/tuyoogame/YooAsset/releases' title='YooAsset源码地址'><i class='fa fa-thumbs-up'></i> YooAsset源码地址</a>]]></content>
       <categories>
-        <category>Gameframework</category>
+        <category>YooAsset</category>
       </categories>
       <tags>
-        <tag>游戏框架记录</tag>
+        <tag>资源管理</tag>
       </tags>
   </entry>
   <entry>
@@ -852,10 +854,261 @@
 <a class="button  center large" href='https://www.yooasset.com/docs/api/' title='API Documentation'><i class='fa fa-thumbs-up'></i> API Documentation</a>
 ]]></content>
       <categories>
-        <category>Gameframework-YooAsset</category>
+        <category>YooAsset</category>
       </categories>
       <tags>
-        <tag>游戏框架记录</tag>
+        <tag>资源管理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity-YooAsset+Hybridclr</title>
+    <url>/2024/09/05/UnityYooAsset-Hybridclr/</url>
+    <content><![CDATA[<h2 id="本篇主要记录在项目中如何使用YooAsset-Hybridclr-带上痛苦面具的三天"><a href="#本篇主要记录在项目中如何使用YooAsset-Hybridclr-带上痛苦面具的三天" class="headerlink" title="本篇主要记录在项目中如何使用YooAsset+Hybridclr (带上痛苦面具的三天)"></a>本篇主要记录在项目中如何使用YooAsset+Hybridclr (带上痛苦面具的三天)</h2><p><strong>启动流程:</strong></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/GF-UGF-StartProcedure.drawio.png"
+                      alt="GameProcedure"
+                ></p>
+<p><strong>YooAsset使用方式</strong></p>
+<a class="button  center large" href='../../../../2024/08/30/UnityYooAsset-instances/' title='YooAsset-实践'><i class='fa fa-solid fa-arrow-right fa-beat-fade'></i> YooAsset-实践</a>
+
+<p><strong>HybridCLR使用方式</strong></p>
+<a class="button  center large" href='../../../../2024/09/05/Unity-Hybridclr-instance/' title='HybridCLR-实践'><i class='fa fa-solid fa-arrow-right fa-beat-fade'></i> HybridCLR-实践</a>
+
+<h2 id="如何结合YooAsset-HybridCLR-实践"><a href="#如何结合YooAsset-HybridCLR-实践" class="headerlink" title="如何结合YooAsset+HybridCLR-实践"></a>如何结合YooAsset+HybridCLR-实践</h2><ul>
+<li>HybridCLR文档中提过，我们需要把项目代码拆分成AOT程序集以及HotFix程序集，如果觉得是个非常痛苦的过程，主要是对程序集这个概念理解不透彻</li>
+</ul>
+<details class="red" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>程序集 </summary>
+              <div class='content'>
+              <ul><li>在 Unity 中，程序集（Assembly） 是用来组织和编译脚本代码的基本单元。通过合理管理程序集，可以提高项目的编译效率、模块化程度以及代码的可维护性。</li></ul><p class='h3' id="Unity-中程序集的基本概念"><a href="#Unity-中程序集的基本概念" class="headerlink" title="Unity 中程序集的基本概念"></a>Unity 中程序集的基本概念</h3><ul><li>程序集（Assembly）：在 .NET&#x2F;Mono 环境下，程序集是编译后的代码库，通常以 .dll 文件的形式存在。Unity 使用程序集来管理和隔离不同的脚本代码。</li><li>默认程序集：Unity 为项目中的脚本自动生成一些默认程序集，例如：</li><li>Assembly-CSharp.dll：包含 Assets 目录下 Scripts 文件夹中的所有脚本（默认）。</li><li>Assembly-CSharp-Editor.dll：包含 Editor 文件夹下的所有编辑器脚本。</li><li>其他根据项目结构自动生成的程序集。</li></ul><p><strong>使用 Assembly Definition Files（.asmdef）管理程序集：</strong></p><ul><li>为了更好地控制和优化程序集，Unity 提供了 Assembly Definition Files（简称 .asmdef 文件）。通过创建和配置 .asmdef 文件，可以自定义程序集的划分。</li></ul><p><strong>创建 .asmdef 文件：</strong></p><ul><li>在 Unity 编辑器的 Project 窗口中，右键点击需要创建程序集的文件夹。</li><li>选择 Create &gt; Assembly Definition，为新程序集命名，例如 MyCustomAssembly。</li></ul><p><strong>配置 .asmdef 文件：</strong></p><ul><li>选中刚创建的 .asmdef 文件，在 Inspector 窗口中进行配置。</li><li>Name：程序集的名称。</li><li>References：添加该程序集所依赖的其他程序集。</li><li>Platforms：指定程序集适用的平台。</li><li>Optional References：可选的程序集引用。</li><li>Define Constraints：定义条件编译符号。</li></ul><p><strong>管理程序集的最佳实践：</strong></p><ul><li>模块化：将项目划分为多个独立的模块，每个模块对应一个程序集。这有助于提高代码的可维护性和复用性。</li><li>减少依赖：尽量减少程序集之间的相互依赖，避免产生循环引用。使用接口或事件机制来解耦模块。</li><li>分离编辑器代码和运行时代码：将编辑器相关的脚本放在独立的编辑器程序集（通常在 Editor 文件夹中）中，避免在构建时包含不必要的代码。</li><li>命名规范：为程序集命名时，采用有意义且易于识别的名称，便于团队协作和代码管理。</li><li>优化编译时间：通过合理划分程序集，减少每次代码更改时需要重新编译的范围，从而提升整体编译速度。</li></ul>
+              </div>
+            </details>
+
+<h4 id="拆分程序集"><a href="#拆分程序集" class="headerlink" title="拆分程序集"></a>拆分程序集</h4><ul>
+<li><p>拆分<br>Assets&#x2F;<br>└── _GameMain&#x2F;<br>  ├──_Const&#x2F;<br>  │   ├── Const.asmdef<br>  │   └── Constants.cs<br>  ├──_Boot&#x2F;<br>  │   ├── Boot.asmdef<br>  │   └── BootManager.cs<br>  ├──_ConfigBaseScript&#x2F;<br>  │   ├── ConfigBaseScript.asmdef<br>  │   └── BaseConfig.cs<br>  ├──_Manager&#x2F;<br>  │   ├── Manager.asmdef<br>  │   └── GameManager.cs<br>  ├──_Scripts&#x2F;<br>  │   ├── Scripts.asmdef<br>  │   └── HotfixLogic.cs<br>  └──_Util&#x2F;<br>  ├── Util.asmdef<br>  └── Utility.cs</p>
+</li>
+<li><p>当程序集内脚本引用了别的程序集的脚本，需要设置对应引用</p>
+</li>
+<li><p>点击Assembly Definition Asset中Assembly Definition Reference-&gt;添加程序集</p>
+</li>
+</ul>
+<p><strong>例如：</strong></p>
+<ul>
+<li>A.Assembly[AClass,DClass,EClass]</li>
+<li>B.Assembly[BClass,CClass]</li>
+<li>A.Assembly ref B.Assembly -&gt; AClass ref BClass A程序集引用了B程序集后，AClass才能调用BClass</li>
+<li>注意循环引用，如果需要相互引用，需要抽象一层，接口或者类都行</li>
+</ul>
+<h4 id="打包程序集"><a href="#打包程序集" class="headerlink" title="打包程序集"></a>打包程序集</h4><ul>
+<li>Project Setting-&gt;GtvrudCLR Settings-&gt;<code>Hot UpdateAssembly Deinitions</code>-&gt;添加你需要热更的程序集</li>
+<li>Project Setting-&gt;GtvrudCLR Settings-&gt;<code>Patch AOT Assemblies</code>-&gt;补充元数据</li>
+</ul>
+<a class="button  center large" href='<https://hybridclr.doc.code-philosophy.com/docs/beginner/generic' title='<font size=2>元数据补充相关文档</font>'><i class='fa> fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>元数据补充相关文档</font></a>
+
+<ul>
+<li>工具栏-&gt;HybridCLR-&gt;CompileDll</li>
+<li>DLL会生成在<code>ProjectName/HybridCLRData/HotUpdateDlls</code>下</li>
+<li>找到我们的需要热更的DLL 复制到 Asset&#x2F;DllCollect,添加后缀Bytes,方便后续通过Yooasset使用TextAsset加载</li>
+<li>可以通过editor脚本生成并复制（参考示例项目）</li>
+</ul>
+<a class="button  center large" href='<https://github.com/focus-creative-games/hybridclr_trial' title='<font size=2>示例项目</font>'><i class='fa> fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>示例项目</font></a>
+
+<h4 id="Yooasset打包资源"><a href="#Yooasset打包资源" class="headerlink" title="Yooasset打包资源"></a>Yooasset打包资源</h4><ul>
+<li>工具栏-&gt;YooAsset-&gt;AssetBundle Collector-&gt;设置需要收集的资源-&gt;save</li>
+<li>工具栏-&gt;YooAsset-&gt;AssetBundle Builder-&gt;Build</li>
+<li>Project&#x2F;Bundle&#x2F;[版本文件夹]&#x2F;[资源]</li>
+</ul>
+<p><strong>注意:</strong></p>
+<ul>
+<li>收集Dll需要FileIgnoreRule需要选择RawFileIgnoreRule</li>
+<li>打开定位寻址需要保证所有的资源名称不重复，因为内部会通过字典收集这些地址，会导致Key重复，构建出错<a class="button  center large" href='../../../../2024/08/28/UnityYooAsset/' title='<font size=2>了解如何收集与构建资源</font>'><i class='fa fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>了解如何收集与构建资源</font></a></li>
+</ul>
+<h4 id="搭建一个本地文件服务器"><a href="#搭建一个本地文件服务器" class="headerlink" title="搭建一个本地文件服务器"></a>搭建一个本地文件服务器</h4><ul>
+<li>我这里直接用的软件<a class="button  center large" href='<https://www.rejetto.com/hfs/' title='<font size=2>一键搭建软件</font>'><i class='fa> fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>一键搭建软件</font></a></li>
+<li>将YooAsset打包的资源放到本地文件服务器里</li>
+<li>创建配置脚本</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>CdnConfig</span></figcaption><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CdnConfig</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> AndroidPath = <span class="string">&quot;CDN/Android/DefaultPackage/&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> IOSPath = <span class="string">&quot;CDN/iOS/DefaultPackage/&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> WindowsPath = <span class="string">&quot;CDN/StandaloneWindows64/DefaultPackage/&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> CdnServicesUrl = <span class="string">&quot;http://192.168.57.105:8080/&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> FailedServicesUrl = <span class="string">&quot;http://192.168.57.105:8080/&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> ResourceVersion = <span class="string">&quot;v0.0&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 获取对应平台资源链接</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;returns&gt;</span>对应平台CDN资源服务链接<span class="doctag">&lt;/returns&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">GetUrlByPlatfrom</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> FindUrlByPlatfrom();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 获取对应平台资源链接</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name=&quot;runtimePlatform&quot;&gt;</span>想要获取的平台<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;returns&gt;</span><span class="doctag">&lt;/returns&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">GetUrlByPlatfrom</span>(<span class="params">RuntimePlatform runtimePlatform</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> FindUrlByPlatfrom(runtimePlatform);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">FindUrlByPlatfrom</span>(<span class="params">RuntimePlatform runtimePlatform = <span class="literal">default</span>, <span class="built_in">string</span> resourceVersion = <span class="literal">null</span></span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (runtimePlatform == <span class="literal">default</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            runtimePlatform = Application.platform;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (resourceVersion == <span class="literal">null</span>) resourceVersion = ResourceVersion;</span><br><span class="line">        <span class="keyword">switch</span> (runtimePlatform)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.Android:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;AndroidPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.IPhonePlayer:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;IOSPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.WindowsPlayer:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;WindowsPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.WindowsEditor:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;WindowsPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="literal">default</span>:</span><br><span class="line">                Log.Error(<span class="string">$&quot;检测到不兼容平台<span class="subst">&#123;runtimePlatform&#125;</span>&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">default</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>联机模式下加载</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>StrategtSelect.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">//策略选择器</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">StrategtSelect</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Dictionary&lt;EPlayMode, Func&lt;IYooAssetInitializationStrategy&gt;&gt; modeMap =</span><br><span class="line">        <span class="keyword">new</span> Dictionary&lt;EPlayMode, Func&lt;IYooAssetInitializationStrategy&gt;&gt;()</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; EPlayMode.EditorSimulateMode, () =&gt; <span class="keyword">new</span> EditorSimulateModeStrategy() &#125;,</span><br><span class="line">        &#123; EPlayMode.OfflinePlayMode, () =&gt; <span class="keyword">new</span> OfflinePlayModeStrategy() &#125;,</span><br><span class="line">        &#123; EPlayMode.HostPlayMode, () =&gt; <span class="keyword">new</span> HostPlayModeStrategy() &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IYooAssetInitializationStrategy <span class="title">GetStrategyByPlayMode</span>(<span class="params">EPlayMode mode</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (modeMap.TryGetValue(mode, <span class="keyword">out</span> <span class="keyword">var</span> strategy))</span><br><span class="line">            <span class="keyword">return</span> strategy();</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            Log.Error(<span class="string">$&quot;No strategy found for play mode: <span class="subst">&#123;mode&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 若找不到返回默认策略</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> HostPlayModeStrategy();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>IYooAssetInitializationStrategy.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">//策略初始化接口</span></span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IYooAssetInitializationStrategy</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">Initialize</span>(<span class="params">ResourcePackage package</span>)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>AInitializeYooAsset.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//策略基类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title">BaseStrategy</span> : <span class="title">IYooAssetInitializationStrategy</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> IEnumerator <span class="title">Initialize</span>(<span class="params">ResourcePackage package</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">InitializePackageAsync</span>(<span class="params">ResourcePackage package, InitializeParameters initParameters</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Log.Info(<span class="string">&quot;初始化包&quot;</span>);</span><br><span class="line">        <span class="comment">// 异步执行初始化操作</span></span><br><span class="line">        <span class="keyword">var</span> initOperation = package.InitializeAsync(initParameters);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> initOperation;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 根据初始化结果记录日志</span></span><br><span class="line">        <span class="keyword">if</span> (initOperation.Status == EOperationStatus.Succeed)</span><br><span class="line">            Log.Info(<span class="string">&quot;资源包初始化成功！&quot;</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            Log.Error(<span class="string">$&quot;资源包初始化失败：<span class="subst">&#123;initOperation.Error&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//策略实现</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HostPlayModeStrategy</span> : <span class="title">BaseStrategy</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> IEnumerator <span class="title">Initialize</span>(<span class="params">ResourcePackage package</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 远程资源模式初始化逻辑</span></span><br><span class="line">        <span class="comment">// <span class="doctag">TODO:</span> 联机运行模式初始化逻辑</span></span><br><span class="line">        IRemoteServices remoteServices = <span class="keyword">new</span> RemoteServices(CdnConfig.GetUrlByPlatfrom(), CdnConfig.GetUrlByPlatfrom());</span><br><span class="line">        <span class="keyword">var</span> cacheFileSystem = FileSystemParameters.CreateDefaultCacheFileSystemParameters(remoteServices,<span class="keyword">new</span> FileDecryption());</span><br><span class="line">        <span class="keyword">var</span> initParameters = <span class="keyword">new</span> HostPlayModeParameters();</span><br><span class="line">        initParameters.CacheFileSystemParameters = cacheFileSystem;</span><br><span class="line">        <span class="keyword">var</span> initOperation = InitializePackageAsync(package, initParameters);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> initOperation;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>YooAssetsMgr.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> Cysharp.Threading.Tasks;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> Cysharp.Threading.Tasks;</span><br><span class="line"><span class="keyword">using</span> Framework;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.UI;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IAssetDownloader</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">UniTask <span class="title">Download</span>()</span>;</span><br><span class="line">    <span class="function">ResourceDownloaderOperation <span class="title">GetDownloader</span>()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnDownloadErrorFunction</span>(<span class="params"><span class="built_in">string</span> fileName, <span class="built_in">string</span> error</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnDownloadProgressUpdateFunction</span>(<span class="params"><span class="built_in">int</span> totalDownloadCount, <span class="built_in">int</span> currentDownloadCount, <span class="built_in">long</span> totalDownloadBytes, <span class="built_in">long</span> currentDownloadBytes</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnDownloadOverFunction</span>(<span class="params"><span class="built_in">bool</span> isSucceed</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnStartDownloadFileFunction</span>(<span class="params"><span class="built_in">string</span> fileName, <span class="built_in">long</span> sizeBytes</span>)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">YooAssetsMgr</span> : <span class="title">IAssetDownloader</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> IYooAssetInitializationStrategy initializationStrategy;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">StartLoadAsset</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> initializationStrategy.Initialize(curResourcePackage);<span class="comment">//初始化当前模式资源包</span></span><br><span class="line">        <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">RequestPackageVersion</span>()</span>;<span class="comment">//请求包版本</span></span><br><span class="line">        <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">UpdatePackageManifest</span>()</span>;<span class="comment">//请求包清单</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>初始化包信息完成后</li>
+<li>通过curResourcePackage.CreateResourceDownloader(int downloadingMaxNumber, int failedTryAgain, int timeout &#x3D; 60)获取下载器</li>
+<li>下载器提供TotalDownloadCount属性判断是否有新的内容需要下载</li>
+<li>下载完成后我们的资源也全都到位了</li>
+<li>通过LoadAssetSync同步加载我们的热更模块以及入口对象</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>ProcedureLoadAssetDown.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> textAsset = YooAssets.LoadAssetSync(<span class="string">&quot;Hotfix.dll&quot;</span>).AssetObject <span class="keyword">as</span> TextAsset;</span><br><span class="line">Assembly.Load(textAsset.bytes);</span><br><span class="line"><span class="keyword">var</span> initObject = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;Assets/Art/ScriptPrefab/BootHotfixEntrace.prefab&quot;</span>);</span><br><span class="line">GameObject.Instantiate(initObject.AssetObject);</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>在Awake 调用补充元数据函数</li>
+<li>Start中加载首页需要展示的内容</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>BootHotfixEntrace.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> HybridCLR;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">BootHotfixEntrace</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">LoadMetadataForAOTAssemblies</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        List&lt;<span class="built_in">string</span>&gt; aotMetaAssemblyFiles = <span class="keyword">new</span> List&lt;<span class="built_in">string</span>&gt;()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;mscorlib.dll&quot;</span>,</span><br><span class="line">            <span class="string">&quot;System.dll&quot;</span>,</span><br><span class="line">            <span class="string">&quot;System.Core.dll&quot;</span>,</span><br><span class="line">            <span class="string">&quot;UniTask.dll&quot;</span>,</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 注意，补充元数据是给AOT dll补充元数据，而不是给热更新dll补充元数据。</span></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 热更新dll不缺元数据，不需要补充，如果调用LoadMetadataForAOTAssembly会返回错误</span></span><br><span class="line">        HomologousImageMode mode = HomologousImageMode.SuperSet;</span><br><span class="line">        <span class="keyword">var</span> package = GameMgr.Inst.yooAssetsMgr.curResourcePackage;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> aotDllName <span class="keyword">in</span> aotMetaAssemblyFiles)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> handle = package.LoadAssetSync&lt;TextAsset&gt;(aotDllName);</span><br><span class="line">            <span class="keyword">var</span> dllBytes = handle.AssetObject <span class="keyword">as</span> TextAsset;</span><br><span class="line">            <span class="comment">// 加载assembly对应的dll，会自动为它hook。一旦aot泛型函数的native函数不存在，用解释器版本代码</span></span><br><span class="line">            LoadImageErrorCode err = RuntimeApi.LoadMetadataForAOTAssembly(dllBytes.bytes, mode);</span><br><span class="line">            Debug.Log(<span class="string">$&quot;LoadMetadataForAOTAssembly:<span class="subst">&#123;aotDllName&#125;</span>. mode:<span class="subst">&#123;mode&#125;</span> ret:<span class="subst">&#123;err&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Awake</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        LoadMetadataForAOTAssemblies();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> LoginPanel = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;xxx.prefab&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> MainPanel = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;xxxx.prefab&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> ActorPar = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;xxxxx.prefab&quot;</span>);</span><br><span class="line">        Framework.EventListener.Instance.<span class="keyword">on</span>(EventConst.LOGIN_END, () =&gt;</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;资源释放&quot;</span>);</span><br><span class="line">            LoginPanel.Release();</span><br><span class="line">        &#125;);</span><br><span class="line">        Instantiate(MainPanel.AssetObject);</span><br><span class="line">        <span class="keyword">var</span> obj = Instantiate(LoginPanel.AssetObject <span class="keyword">as</span> GameObject, GameObject.Find(<span class="string">&quot;Canvas&quot;</span>).transform);</span><br><span class="line">        obj.SetActive(<span class="literal">true</span>);</span><br><span class="line">        <span class="keyword">var</span> enter_obj = obj.transform.Find(<span class="string">&quot;enter_btn&quot;</span>);</span><br><span class="line">        enter_obj.gameObject.SetActive(<span class="literal">true</span>);</span><br><span class="line">        Instantiate(ActorPar.AssetObject);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<h4 id="热更DLL"><a href="#热更DLL" class="headerlink" title="热更DLL"></a>热更DLL</h4><ul>
+<li>修改热更代码-&gt;重新build资源包-&gt;替换服务器资源-&gt;YooAsset会检查对应的package.json内的版本号查看差异并刷新清单下载新的内容</li>
+<li>资源同上，具体看不同HybridCLR与YooAsset的实践文章</li>
+</ul>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><ul>
+<li>使用过程中其实出现了很多问题，需要常看两个框架的文档，里面有常见问题的解决方案。</li>
+<li>例如AOT模块不能依赖热更模块</li>
+<li>加载资源会生成句柄，不使用需要及时回收，否则后造成内存泄漏</li>
+</ul>
+]]></content>
+      <categories>
+        <category>YooAsset,Hybridclr</category>
+      </categories>
+      <tags>
+        <tag>资源管理,热更</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity-HybridCLR</title>
+    <url>/2024/09/05/Unity-Hybridclr/</url>
+    <content><![CDATA[<h2 id="HybridCLR（huatuo）-介绍"><a href="#HybridCLR（huatuo）-介绍" class="headerlink" title="HybridCLR（huatuo） 介绍"></a>HybridCLR（huatuo） 介绍</h2><ul>
+<li>HybridCLR是一个特性完整、零成本、高性能、低内存的近乎完美的Unity全平台原生c#热更新解决方案。</li>
+</ul>
+<p>HybridCLR扩充了il2cpp运行时代码，使它由纯AOT runtime变成AOT+Interpreter 混合runtime，进而原生支持动态加载assembly，从底层彻底支持了热更新。使用HybridCLR技术的游戏不仅能在Android平台，也能在IOS、Consoles、WebGL等所有il2cpp支持的平台上高效运行。</p>
+<p>由于HybridCLR对ECMA-335规范 的良好支持以及对Unity开发工作流的高度兼容，Unity项目在接入HybridCLR后，可以几乎无缝地获得C#代码热更新的能力，开发者不需要改变日常开发习惯和要求。HybridCLR首次实现了将Unity平台的全平台代码热更新方案的工程难度降到几乎为零的水平。</p>
+<details class="[red]" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>ECMA-335规范 </summary>
+              <div class='content'>
+              <p><a class="link"   href="https://www.ecma-international.org/wp-content/uploads/ECMA-335_6th_edition_june_2012.pdf" >https://www.ecma-international.org/wp-content/uploads/ECMA-335_6th_edition_june_2012.pdf <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+              </div>
+            </details>
+
+<h2 id="支持的版本与平台"><a href="#支持的版本与平台" class="headerlink" title="支持的版本与平台"></a>支持的版本与平台</h2><ul>
+<li>支持2019.4.x、2020.3.x、2021.3.x、2022.3.x、2023.2.x、6000.x.y全系列LTS版本</li>
+<li>支持所有il2cpp支持的平台</li>
+<li>支持团结引擎和鸿蒙平台</li>
+</ul>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><ul>
+<li>在unity的il2cpp之类的AOT runtime额外提供了interpreter模块，将它们由纯AOT运行时改造为”AOT + Interpreter”混合运行方式。</li>
+<li>实现了一个高效的元数据(dll)解析库</li>
+<li>改造了元数据管理模块，实现了元数据的动态注册</li>
+<li>实现了一个IL指令集到自定义的寄存器指令集的compiler</li>
+<li>实现了一个高效的寄存器解释器</li>
+<li>额外提供大量的instinct函数，提升解释器性能</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/Unity-Hybridclr/image.png"
+                      alt="working principle"
+                ></p>
+<p><strong>推荐兄弟们看作者的解析：</strong><a class="link"   href="https://hybridclr.doc.code-philosophy.com/blog" >https://hybridclr.doc.code-philosophy.com/blog <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+]]></content>
+      <categories>
+        <category>HybridCLR</category>
+      </categories>
+      <tags>
+        <tag>热更框架</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity-HybridCLR-实践</title>
+    <url>/2024/09/05/Unity-Hybridclr-instance/</url>
+    <content><![CDATA[<a class="button  center large" href='https://hybridclr.doc.code-philosophy.com/docs/beginner/quickstart' title='参考文档'><i class='fa fa-thumbs-up'></i> 参考文档</a>
+
+<h2 id="实践环境"><a href="#实践环境" class="headerlink" title="实践环境"></a>实践环境</h2><ul>
+<li><p>Unity 2022.3.41f(LTS)</p>
+</li>
+<li><p>IL2CPP模块</p>
+</li>
+<li><p>Visual Studio 2022 (添加Unity游戏开发、c++游戏开发组件)</p>
+</li>
+<li><p>Package Manager 安装 com.code-philosophy.hybridclr 我用的版本是v6.7.1</p>
+</li>
+</ul>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><ul>
+<li><p>基础的步骤就不记录了（例如场景创建什么的），只记录与Hybridclr相关的内容</p>
+</li>
+<li><p>作者提供的示例项目，我是在示例项目基础上开始的</p>
+<a class="button  center large" href='https://github.com/focus-creative-games/hybridclr_trial' title='GitHub'><i class='fa fa-thumbs-up'></i> GitHub</a>
+<a class="button  center large" href='https://gitee.com/focus-creative-games/hybridclr_trial' title='Gitee'><i class='fa fa-thumbs-up'></i> Gitee</a></li>
+</ul>
+<p><strong>创建热更模块：</strong></p>
+<ul>
+<li><p>创建 <code>Assets/HotUpdate2</code> 目录</p>
+</li>
+<li><p>在目录下创建Assembly Definition,创建一个名为HotUpdate2的程序集模块</p>
+</li>
+</ul>
+<p><strong>配置HybridCLR：</strong></p>
+<ul>
+<li>点击工具栏</li>
+<li>打开 Project Settings</li>
+<li>选择 HybridCLR Settings</li>
+<li>配置 Hot Update Assembly Definitions</li>
+<li>添加程序集 HotUpdate2</li>
+</ul>
+<p><strong>配置PlayerSetting:</strong></p>
+<ul>
+<li>Project Settings-&gt;Player-&gt;Other-&gt;Configuration</li>
+<li>Scripting Backend 切换为 IL2CPP</li>
+<li>Api Compatability Level 切换为 .Net Framework</li>
+<li>Api Compatability Level版本选择：.Net 4.x(Unity 2019-2020) 或 .Net Framework（Unity 2021+）</li>
+<li>HybridClr包低于4.0需要关闭增量GC</li>
+</ul>
+<p><strong>创建热更脚本：</strong></p>
+<ul>
+<li>在热更模块目录下创建Hello.cs</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>Hello.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Hello</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">StaticStart</span>()</span>&#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Call static Fun.Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p><strong>加载热更程序集：</strong></p>
+<ul>
+<li>编辑器加载</li>
+<li>创建 EditorLoadDll.cs 脚本</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>EditorLoadDLL.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">EditorLoadDll</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> UNITY_EDITOR</span></span><br><span class="line">        Assembly hotUpdateAss = System.AppDomain.CurrentDomain.GetAssemblies().First(a =&gt; a.GetName().Name == <span class="string">&quot;HotUpdate2&quot;</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">        Assembly hotUpdateAss = Assembly.Load(File.ReadAllBytes(<span class="string">$&quot;<span class="subst">&#123;Application.streamingAssetsPath&#125;</span>/HotUpdate2.dll.bytes&quot;</span>));</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">        Type type = hotUpdateAss.GetType(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line">        type.GetMethod(<span class="string">&quot;StaticStart&quot;</span>).Invoke(<span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> hello = type.Assembly.CreateInstance(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line">        hello.GetType().GetMethod(<span class="string">&quot;Start&quot;</span>).Invoke(hello, <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>工具栏-&gt;Build-&gt;BuildAssetsAndCopyToStreamingAssets（会打包并复制dll到<code>StreamingAssets</code>目录下）</li>
+<li>此外hybridCLR还提供单独构建DLL的选项，<code>工具栏-&gt;HybridCLR-&gt;CompileDll</code>(会打包到工程根目录<code>HybridCLRData/HotUpdateDlls</code>下,编辑器下复制对应DLL并增加.bytes后缀再复制到Asset&#x2F;StreamingAsset下)</li>
+<li>场景内创建一个GameObject-&gt;挂载脚本-&gt;运行</li>
+</ul>
+<h2 id="打包后运行并热更"><a href="#打包后运行并热更" class="headerlink" title="打包后运行并热更"></a>打包后运行并热更</h2><ul>
+<li><p>工具栏-&gt;File-&gt;Biuld And Run<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/Unity-Hybridclr/runAtPc.png"
+                      alt="打包运行"
+                ></p>
+</li>
+<li><p>修改Hello.cs</p>
+</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>Hello.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Hello</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hot fix Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">StaticStart</span>()</span>&#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hot fix Call static Fun.Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>工具栏-&gt;HybridCLR-&gt;CompileDLL-&gt;Win64(重新构建DLL)</li>
+<li>给DLL添加.bytes后缀替换游戏包内的DLL（游戏文件夹&#x2F;HybridCLRTrial_Data&#x2F;StreamingAssets）</li>
+<li>重新运行游戏</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/Unity-Hybridclr/hotfixRun.png"
+                      alt="hotfixRun"
+                ></p>
+]]></content>
+      <categories>
+        <category>HybridCLR</category>
+      </categories>
+      <tags>
+        <tag>热更框架</tag>
       </tags>
   </entry>
 </search>
