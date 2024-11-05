@@ -1111,4 +1111,92 @@
         <tag>热更框架</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Unity可视化剧情编辑器</title>
+    <url>/2024/11/04/UnityDialogueEditor/</url>
+    <content><![CDATA[<h2 id="整体设计"><a href="#整体设计" class="headerlink" title="整体设计"></a>整体设计</h2><h3 id="基于NodeGraphProcess-graphView-Odin"><a href="#基于NodeGraphProcess-graphView-Odin" class="headerlink" title="基于NodeGraphProcess+graphView+Odin"></a>基于NodeGraphProcess+graphView+Odin</h3><p><strong>NodeGraphProcess:</strong><br>NodeGraphProcessor 基于 Unity 的 GraphView 技术，速度也非常快，并且可以很好地处理大型图形。<br><strong>GraphView:</strong><br>GraphView 是 Unity 中用于构建图形用户界面的一个系统，通常用于创建可视化编辑器、节点图形或其他需要图形交互的应用。<br><strong>Odin:</strong><br>Odin Inspector 是一个 Unity 编辑器扩展工具，旨在增强 Unity 编辑器的功能和用户体验。它提供了许多强大的功能，允许开发者更轻松地创建和管理游戏对象的属性和编辑器界面。</p>
+<h3 id="UML类图"><a href="#UML类图" class="headerlink" title="UML类图"></a>UML类图</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityDialogueEditor/%E5%89%A7%E6%83%85%E7%BC%96%E8%BE%91%E5%99%A8-%E6%B5%81%E7%A8%8B%E8%A7%86%E5%9B%BE%E7%B1%BB.drawio.png"
+                      alt="流程视图"
+                ></p>
+<p><strong>流程Graph类设计：</strong></p>
+<ul>
+<li>剧情编辑器的流程视图继承了NodeGraphProcessor提供的基类BaseGraph</li>
+<li>BaseGraph提供了可视化流图的基础功能，编辑器界面的实现基于BaseGraphView</li>
+<li>StroyGraph实现了IRunStroyGraph,IRunStroyGraph提供了Graph在运行时需要处理的函数,通过IRunStroyGraph避免引用StroyGraph的实例导致循环引用</li>
+<li>所有的Graph的最下层的基类都是SerializedScriptableObject，意味着它可以被Unity序列化并保存，<br>得益于odin可以更好的配置里面的内容</li>
+</ul>
+<h3 id="节点类图"><a href="#节点类图" class="headerlink" title="节点类图"></a>节点类图</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityDialogueEditor/%E5%89%A7%E6%83%85%E7%BC%96%E8%BE%91%E5%99%A8-%E8%8A%82%E7%82%B9%E8%AE%BE%E8%AE%A1.drawio.png"
+                      alt="节点类图"
+                ></p>
+<p><strong>节点设计:</strong></p>
+<ul>
+<li><p>NodeGraphProcessor提供了BaseNode作为节点的基类，在这个基础上派生出了StroyBaseNode以及StroyExcuteNode,这里考虑到了部分节点不存在Next只依赖节点内部实现。</p>
+</li>
+<li><p>类图里简略了很多节点的具体关系，因为太多了</p>
+</li>
+<li><p>渲染节点需要覆写基类中INodeRuntime的两个函数实现,分别是Render()以及Refresh(),后续渲染逻辑的运行大部分依赖这两个函数的实现。</p>
+</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">RenderNode</span>()</span></span><br><span class="line">   &#123;</span><br><span class="line">       <span class="keyword">var</span> stage = GameObject.Find(<span class="string">&quot;StageCanvas&quot;</span>).transform;</span><br><span class="line">       <span class="keyword">if</span> (asset != <span class="literal">null</span>)</span><br><span class="line">       &#123;</span><br><span class="line">           <span class="comment">//渲染节点画面</span></span><br><span class="line">           asset.GenerateDialogByInfo(stage);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">       &#123;</span><br><span class="line">           Debug.LogWarning(<span class="string">&quot;DialogAsset 为空，无法渲染节点内容&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">RefreshNode</span>()</span></span><br><span class="line">   &#123;</span><br><span class="line">       DelayUpdate();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><p>如果需要获取节点内部数据需要节点实现IStroyNodeGetInfo，通过接口解耦，组合接口让派生类拥有更多功能</p>
+</li>
+<li><p>至于IStroyOptionNode是为了Editor下将所有剧情编辑器的节点规整到一起，打开节点编辑面板时可以保证只存在剧情编辑器开发的节点，这里通过反射以及配置表实现，应该有更好的方式，还没想到</p>
+</li>
+<li><p>NodeView影响节点在流程视图里的显示，要不要重写看具体需求</p>
+</li>
+<li><p>节点内部需要覆写 TryGetOutputValue(),这个函数实现影响下一个节点获取上一个节点输出的内容，当然也有部分节点不需要实现，看具体需求。</p>
+</li>
+</ul>
+<a class="button  center large" href='https://alelievr.github.io/NodeGraphProcessor/api/index.html' title='NodeGraphProcessor文档'><i class='fa fa-thumbs-up'></i> NodeGraphProcessor文档</a>
+
+
+<h3 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h3><ul>
+<li>将整个流程图想象成一个大舞台，在舞台演示剧情的内容</li>
+<li>将节点想象成剧情里的一幕</li>
+<li>所有内容都在舞台中展示，一幕完成切换下一幕<br><strong>执行流程图：</strong></li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityDialogueEditor/%E5%89%A7%E6%83%85%E7%BC%96%E8%BE%91%E5%99%A8-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.drawio.png"
+                      alt="执行流程"
+                ></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>目前还存在一定问题，执行流程还有一部分情况未完善</li>
+<li>整体设计考虑了将节点抽象成一个个体，框架不依赖节点具体实现，框架只规范节点执行的流程，<br>这样的好处我能想到的就是每个节点都能具体实现任何逻辑，只要保证节点与节点之间可以步进，理论上在节点中添加一个小游戏都没有问题，说到这里我觉得我还应该去规范节点的开始与结束（简称状态机），保证步进的稳定，避免步进时上一个未完成或下一个还没有准备好的情况。</li>
+</ul>
+<h2 id="剧情编辑器截图"><a href="#剧情编辑器截图" class="headerlink" title="剧情编辑器截图"></a>剧情编辑器截图</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityDialogueEditor/image.png"
+                      alt="alt text"
+                ></p>
+<ul>
+<li>生成创建剧情所需资源的编辑器工具，主要使用Odin，大部分内容文档都提供了帮助</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityDialogueEditor/process_unity.png"
+                      alt="alt text"
+                ></p>
+<ul>
+<li>当前小节内容配置，支持生成多选项，与或非判断，节点回退，表演数据配置，文本配置，立绘配置，Live2d配置，出场动画配置，自适应立绘位置等内容</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Gameframework</category>
+      </categories>
+      <tags>
+        <tag>游戏框架记录</tag>
+      </tags>
+  </entry>
 </search>
