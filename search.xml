@@ -1,6 +1,231 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Unity-HybridCLR-实践</title>
+    <url>/2024/09/05/Unity-Hybridclr-instance/</url>
+    <content><![CDATA[<a class="button  center large" href='https://hybridclr.doc.code-philosophy.com/docs/beginner/quickstart' title='参考文档'><i class='fa fa-thumbs-up'></i> 参考文档</a>
+
+<h2 id="实践环境"><a href="#实践环境" class="headerlink" title="实践环境"></a>实践环境</h2><ul>
+<li><p>Unity 2022.3.41f(LTS)</p>
+</li>
+<li><p>IL2CPP模块</p>
+</li>
+<li><p>Visual Studio 2022 (添加Unity游戏开发、c++游戏开发组件)</p>
+</li>
+<li><p>Package Manager 安装 com.code-philosophy.hybridclr 我用的版本是v6.7.1</p>
+</li>
+</ul>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><ul>
+<li><p>基础的步骤就不记录了（例如场景创建什么的），只记录与Hybridclr相关的内容</p>
+</li>
+<li><p>作者提供的示例项目，我是在示例项目基础上开始的</p>
+<a class="button  center large" href='https://github.com/focus-creative-games/hybridclr_trial' title='GitHub'><i class='fa fa-thumbs-up'></i> GitHub</a>
+<a class="button  center large" href='https://gitee.com/focus-creative-games/hybridclr_trial' title='Gitee'><i class='fa fa-thumbs-up'></i> Gitee</a></li>
+</ul>
+<p><strong>创建热更模块：</strong></p>
+<ul>
+<li><p>创建 <code>Assets/HotUpdate2</code> 目录</p>
+</li>
+<li><p>在目录下创建Assembly Definition,创建一个名为HotUpdate2的程序集模块</p>
+</li>
+</ul>
+<p><strong>配置HybridCLR：</strong></p>
+<ul>
+<li>点击工具栏</li>
+<li>打开 Project Settings</li>
+<li>选择 HybridCLR Settings</li>
+<li>配置 Hot Update Assembly Definitions</li>
+<li>添加程序集 HotUpdate2</li>
+</ul>
+<p><strong>配置PlayerSetting:</strong></p>
+<ul>
+<li>Project Settings-&gt;Player-&gt;Other-&gt;Configuration</li>
+<li>Scripting Backend 切换为 IL2CPP</li>
+<li>Api Compatability Level 切换为 .Net Framework</li>
+<li>Api Compatability Level版本选择：.Net 4.x(Unity 2019-2020) 或 .Net Framework（Unity 2021+）</li>
+<li>HybridClr包低于4.0需要关闭增量GC</li>
+</ul>
+<p><strong>创建热更脚本：</strong></p>
+<ul>
+<li>在热更模块目录下创建Hello.cs</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>Hello.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Hello</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">StaticStart</span>()</span>&#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Call static Fun.Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p><strong>加载热更程序集：</strong></p>
+<ul>
+<li>编辑器加载</li>
+<li>创建 EditorLoadDll.cs 脚本</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>EditorLoadDLL.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">EditorLoadDll</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> UNITY_EDITOR</span></span><br><span class="line">        Assembly hotUpdateAss = System.AppDomain.CurrentDomain.GetAssemblies().First(a =&gt; a.GetName().Name == <span class="string">&quot;HotUpdate2&quot;</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">        Assembly hotUpdateAss = Assembly.Load(File.ReadAllBytes(<span class="string">$&quot;<span class="subst">&#123;Application.streamingAssetsPath&#125;</span>/HotUpdate2.dll.bytes&quot;</span>));</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">        Type type = hotUpdateAss.GetType(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line">        type.GetMethod(<span class="string">&quot;StaticStart&quot;</span>).Invoke(<span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> hello = type.Assembly.CreateInstance(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line">        hello.GetType().GetMethod(<span class="string">&quot;Start&quot;</span>).Invoke(hello, <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>工具栏-&gt;Build-&gt;BuildAssetsAndCopyToStreamingAssets（会打包并复制dll到<code>StreamingAssets</code>目录下）</li>
+<li>此外hybridCLR还提供单独构建DLL的选项，<code>工具栏-&gt;HybridCLR-&gt;CompileDll</code>(会打包到工程根目录<code>HybridCLRData/HotUpdateDlls</code>下,编辑器下复制对应DLL并增加.bytes后缀再复制到Asset&#x2F;StreamingAsset下)</li>
+<li>场景内创建一个GameObject-&gt;挂载脚本-&gt;运行</li>
+</ul>
+<h2 id="打包后运行并热更"><a href="#打包后运行并热更" class="headerlink" title="打包后运行并热更"></a>打包后运行并热更</h2><ul>
+<li><p>工具栏-&gt;File-&gt;Biuld And Run<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/Unity-Hybridclr/runAtPc.png"
+                      alt="打包运行"
+                ></p>
+</li>
+<li><p>修改Hello.cs</p>
+</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>Hello.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Hello</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hot fix Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">StaticStart</span>()</span>&#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hot fix Call static Fun.Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>工具栏-&gt;HybridCLR-&gt;CompileDLL-&gt;Win64(重新构建DLL)</li>
+<li>给DLL添加.bytes后缀替换游戏包内的DLL（游戏文件夹&#x2F;HybridCLRTrial_Data&#x2F;StreamingAssets）</li>
+<li>重新运行游戏</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/Unity-Hybridclr/hotfixRun.png"
+                      alt="hotfixRun"
+                ></p>
+]]></content>
+      <categories>
+        <category>HybridCLR</category>
+      </categories>
+      <tags>
+        <tag>热更框架</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity可视化剧情编辑器</title>
+    <url>/2024/11/04/UnityDialogueEditor/</url>
+    <content><![CDATA[<h2 id="整体设计"><a href="#整体设计" class="headerlink" title="整体设计"></a>整体设计</h2><h3 id="基于NodeGraphProcess-graphView-Odin"><a href="#基于NodeGraphProcess-graphView-Odin" class="headerlink" title="基于NodeGraphProcess+graphView+Odin"></a>基于NodeGraphProcess+graphView+Odin</h3><p><strong>NodeGraphProcess:</strong><br>NodeGraphProcessor 基于 Unity 的 GraphView 技术，速度也非常快，并且可以很好地处理大型图形。<br><strong>GraphView:</strong><br>GraphView 是 Unity 中用于构建图形用户界面的一个系统，通常用于创建可视化编辑器、节点图形或其他需要图形交互的应用。<br><strong>Odin:</strong><br>Odin Inspector 是一个 Unity 编辑器扩展工具，旨在增强 Unity 编辑器的功能和用户体验。它提供了许多强大的功能，允许开发者更轻松地创建和管理游戏对象的属性和编辑器界面。</p>
+<h3 id="UML类图"><a href="#UML类图" class="headerlink" title="UML类图"></a>UML类图</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityDialogueEditor/%E5%89%A7%E6%83%85%E7%BC%96%E8%BE%91%E5%99%A8-%E6%B5%81%E7%A8%8B%E8%A7%86%E5%9B%BE%E7%B1%BB.drawio.png"
+                      alt="流程视图"
+                ></p>
+<p><strong>流程Graph类设计：</strong></p>
+<ul>
+<li>剧情编辑器的流程视图继承了NodeGraphProcessor提供的基类BaseGraph</li>
+<li>BaseGraph提供了可视化流图的基础功能，编辑器界面的实现基于BaseGraphView</li>
+<li>StroyGraph实现了IRunStroyGraph,IRunStroyGraph提供了Graph在运行时需要处理的函数,通过IRunStroyGraph避免引用StroyGraph的实例导致循环引用</li>
+<li>所有的Graph的最下层的基类都是SerializedScriptableObject，意味着它可以被Unity序列化并保存，<br>得益于odin可以更好的配置里面的内容</li>
+</ul>
+<h3 id="节点类图"><a href="#节点类图" class="headerlink" title="节点类图"></a>节点类图</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityDialogueEditor/%E5%89%A7%E6%83%85%E7%BC%96%E8%BE%91%E5%99%A8-%E8%8A%82%E7%82%B9%E8%AE%BE%E8%AE%A1.drawio.png"
+                      alt="节点类图"
+                ></p>
+<p><strong>节点设计:</strong></p>
+<ul>
+<li><p>NodeGraphProcessor提供了BaseNode作为节点的基类，在这个基础上派生出了StroyBaseNode以及StroyExcuteNode,这里考虑到了部分节点不存在Next只依赖节点内部实现。</p>
+</li>
+<li><p>类图里简略了很多节点的具体关系，因为太多了</p>
+</li>
+<li><p>渲染节点需要覆写基类中INodeRuntime的两个函数实现,分别是Render()以及Refresh(),后续渲染逻辑的运行大部分依赖这两个函数的实现。</p>
+</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">RenderNode</span>()</span></span><br><span class="line">   &#123;</span><br><span class="line">       <span class="keyword">var</span> stage = GameObject.Find(<span class="string">&quot;StageCanvas&quot;</span>).transform;</span><br><span class="line">       <span class="keyword">if</span> (asset != <span class="literal">null</span>)</span><br><span class="line">       &#123;</span><br><span class="line">           <span class="comment">//渲染节点画面</span></span><br><span class="line">           asset.GenerateDialogByInfo(stage);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">       &#123;</span><br><span class="line">           Debug.LogWarning(<span class="string">&quot;DialogAsset 为空，无法渲染节点内容&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">RefreshNode</span>()</span></span><br><span class="line">   &#123;</span><br><span class="line">       DelayUpdate();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><p>如果需要获取节点内部数据需要节点实现IStroyNodeGetInfo，通过接口解耦，组合接口让派生类拥有更多功能</p>
+</li>
+<li><p>至于IStroyOptionNode是为了Editor下将所有剧情编辑器的节点规整到一起，打开节点编辑面板时可以保证只存在剧情编辑器开发的节点，这里通过反射以及配置表实现，应该有更好的方式，还没想到</p>
+</li>
+<li><p>NodeView影响节点在流程视图里的显示，要不要重写看具体需求</p>
+</li>
+<li><p>节点内部需要覆写 TryGetOutputValue(),这个函数实现影响下一个节点获取上一个节点输出的内容，当然也有部分节点不需要实现，看具体需求。</p>
+</li>
+</ul>
+<a class="button  center large" href='https://alelievr.github.io/NodeGraphProcessor/api/index.html' title='NodeGraphProcessor文档'><i class='fa fa-thumbs-up'></i> NodeGraphProcessor文档</a>
+
+
+<h3 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h3><ul>
+<li>将整个流程图想象成一个大舞台，在舞台演示剧情的内容</li>
+<li>将节点想象成剧情里的一幕</li>
+<li>所有内容都在舞台中展示，一幕完成切换下一幕<br><strong>执行流程图：</strong></li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityDialogueEditor/%E5%89%A7%E6%83%85%E7%BC%96%E8%BE%91%E5%99%A8-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.drawio.png"
+                      alt="执行流程"
+                ></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>目前还存在一定问题，执行流程还有一部分情况未完善</li>
+<li>整体设计考虑了将节点抽象成一个个体，框架不依赖节点具体实现，框架只规范节点执行的流程，<br>这样的好处我能想到的就是每个节点都能具体实现任何逻辑，只要保证节点与节点之间可以步进，理论上在节点中添加一个小游戏都没有问题，说到这里我觉得我还应该去规范节点的开始与结束（简称状态机），保证步进的稳定，避免步进时上一个未完成或下一个还没有准备好的情况。</li>
+</ul>
+<h2 id="剧情编辑器截图"><a href="#剧情编辑器截图" class="headerlink" title="剧情编辑器截图"></a>剧情编辑器截图</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityDialogueEditor/image.png"
+                      alt="alt text"
+                ></p>
+<ul>
+<li>生成创建剧情所需资源的编辑器工具，主要使用Odin，大部分内容文档都提供了帮助</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/UnityDialogueEditor/process_unity.png"
+                      alt="alt text"
+                ></p>
+<ul>
+<li>当前小节内容配置，支持生成多选项，与或非判断，节点回退，表演数据配置，文本配置，立绘配置，Live2d配置，出场动画配置，自适应立绘位置等内容</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Gameframework</category>
+      </categories>
+      <tags>
+        <tag>游戏框架记录</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity-HybridCLR</title>
+    <url>/2024/09/05/Unity-Hybridclr/</url>
+    <content><![CDATA[<h2 id="HybridCLR（huatuo）-介绍"><a href="#HybridCLR（huatuo）-介绍" class="headerlink" title="HybridCLR（huatuo） 介绍"></a>HybridCLR（huatuo） 介绍</h2><ul>
+<li>HybridCLR是一个特性完整、零成本、高性能、低内存的近乎完美的Unity全平台原生c#热更新解决方案。</li>
+</ul>
+<p>HybridCLR扩充了il2cpp运行时代码，使它由纯AOT runtime变成AOT+Interpreter 混合runtime，进而原生支持动态加载assembly，从底层彻底支持了热更新。使用HybridCLR技术的游戏不仅能在Android平台，也能在IOS、Consoles、WebGL等所有il2cpp支持的平台上高效运行。</p>
+<p>由于HybridCLR对ECMA-335规范 的良好支持以及对Unity开发工作流的高度兼容，Unity项目在接入HybridCLR后，可以几乎无缝地获得C#代码热更新的能力，开发者不需要改变日常开发习惯和要求。HybridCLR首次实现了将Unity平台的全平台代码热更新方案的工程难度降到几乎为零的水平。</p>
+<details class="[red]" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>ECMA-335规范 </summary>
+              <div class='content'>
+              <p><a class="link"   href="https://www.ecma-international.org/wp-content/uploads/ECMA-335_6th_edition_june_2012.pdf" >https://www.ecma-international.org/wp-content/uploads/ECMA-335_6th_edition_june_2012.pdf <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+              </div>
+            </details>
+
+<h2 id="支持的版本与平台"><a href="#支持的版本与平台" class="headerlink" title="支持的版本与平台"></a>支持的版本与平台</h2><ul>
+<li>支持2019.4.x、2020.3.x、2021.3.x、2022.3.x、2023.2.x、6000.x.y全系列LTS版本</li>
+<li>支持所有il2cpp支持的平台</li>
+<li>支持团结引擎和鸿蒙平台</li>
+</ul>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><ul>
+<li>在unity的il2cpp之类的AOT runtime额外提供了interpreter模块，将它们由纯AOT运行时改造为”AOT + Interpreter”混合运行方式。</li>
+<li>实现了一个高效的元数据(dll)解析库</li>
+<li>改造了元数据管理模块，实现了元数据的动态注册</li>
+<li>实现了一个IL指令集到自定义的寄存器指令集的compiler</li>
+<li>实现了一个高效的寄存器解释器</li>
+<li>额外提供大量的instinct函数，提升解释器性能</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/Unity-Hybridclr/image.png"
+                      alt="working principle"
+                ></p>
+<p><strong>推荐兄弟们看作者的解析：</strong><a class="link"   href="https://hybridclr.doc.code-philosophy.com/blog" >https://hybridclr.doc.code-philosophy.com/blog <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+]]></content>
+      <categories>
+        <category>HybridCLR</category>
+      </categories>
+      <tags>
+        <tag>热更框架</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>UnityGameframework 内置模块</title>
     <url>/2024/08/09/UnityGameframework-01/</url>
     <content><![CDATA[<h3 id="Game-Framework-内置模块"><a href="#Game-Framework-内置模块" class="headerlink" title="Game Framework 内置模块"></a>Game Framework 内置模块</h3><p><code>Game Framework</code> 是一个基于 Unity 引擎的游戏框架，提供了多种模块封装了游戏开发过程中常用的功能。以下是框架中包含的 19 个内置模块的详细描述：</p>
@@ -74,6 +299,111 @@
 <a class="button  center large" href='https://github.com/DrFlower/TowerDefense-GameFramework-Demo/archive/refs/heads/master.zip' title='塔防DEMO'><i class='fa fa-thumbs-up'></i> 塔防DEMO</a>
 
 <h4 id="以上内容只为了方便学习与下载集合到一起"><a href="#以上内容只为了方便学习与下载集合到一起" class="headerlink" title="以上内容只为了方便学习与下载集合到一起!!!!"></a><font color="red">以上内容只为了方便学习与下载集合到一起!!!!</font></h4>]]></content>
+      <categories>
+        <category>Gameframework</category>
+      </categories>
+      <tags>
+        <tag>游戏框架记录</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>UnityGameframework 状态机</title>
+    <url>/2024/08/16/UnityGameframework-Fsm/</url>
+    <content><![CDATA[<h1 id="FSM状态机-有限状态机"><a href="#FSM状态机-有限状态机" class="headerlink" title="FSM状态机(有限状态机)"></a>FSM状态机(有限状态机)</h1><h2 id="什么是有限状态机"><a href="#什么是有限状态机" class="headerlink" title="什么是有限状态机"></a>什么是有限状态机</h2><ul>
+<li>在有限的状态合集里切换不同状态，执行不同逻辑，通常用于玩家控制，怪物AI，游戏流程控制等</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/GF-UGF-FSM.drawio.png"
+                      alt="UML 类图"
+                ></p>
+<ul>
+<li>状态机实现包括三个部分，FsmBase,FsmManager,FsmState,Fsm,IFsm,IFsmMananger</li>
+<li>FsmBase,IFsm,Fsm:状态机</li>
+<li>FsmManager,IFsmManager:状态管理器，在整体架构中，每个模块都存在一个管理器</li>
+<li>FsmState:单个状态</li>
+</ul>
+<h3 id="FsmState"><a href="#FsmState" class="headerlink" title="FsmState"></a>FsmState</h3><ul>
+<li><p>这里指状态机管理的不同的状态</p>
+</li>
+<li><p>OnInit-&gt;OnEnter-&gt;OnUpdate-&gt;OnLeave-&gt;OnDestroy作为贯穿整个状态的生命周期函数</p>
+</li>
+<li><p>多态函数ChangeState提供切换状态逻辑，实际上是通过传入的状态机调用状态机的ChangeState</p>
+</li>
+</ul>
+<h3 id="FsmBase"><a href="#FsmBase" class="headerlink" title="FsmBase"></a>FsmBase</h3><ul>
+<li><p>有限状态机基类</p>
+</li>
+<li><p>提供通用属性，通用函数</p>
+</li>
+</ul>
+<h3 id="Fsm"><a href="#Fsm" class="headerlink" title="Fsm"></a>Fsm</h3><ul>
+<li><p>有限状态机继承FsmBase</p>
+</li>
+<li><p>提供Create函数创建状态机(多态)<br>– 名称 name<br>– 持有者 owner<br>– 状态集合 states []:FsmState&lt;T&gt; || states:List&lt;FsmState &lt;T&gt;&gt;<br>– 从引用池获取引用(懒加载) -&gt; 初始化状态机属性 -&gt; 遍历状态列表中的初始化函数OnInit</p>
+</li>
+<li><p>提供Clear函数清理状态机<br>– 退出当前状态 -&gt; 遍历状态列表执行OnDestroy -&gt; 清理状态字典 -&gt; 将变量类返回引用池 -&gt;清空存放变量类字典的数据 -&gt; 清空属性并设置状态机标志</p>
+<details class="[red]" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>变量类 ：Variable </summary>
+              <div class='content'>
+              <ul><li><p>GameFramework.Runtime.Variable : IReference</p></li><li><p>Type:获取变量类型</p></li><li><p>GetValue:获取变量值</p></li><li><p>SetValue:设置变量值</p></li><li><p>Clear:清理变量值</p></li><li><p>可以在创建新的变量类型时继承该类扩写，例如流程模块中：<br>– VarInt32 继承了 Variable,并且提供隐式转换操作符<br>– public static implicit operator VarInt32(int value)<br>– public static implicit operator int(VarInt32 value)</p></li></ul>
+              </div>
+            </details>
+</li>
+<li><p>提供Start开始状态机<br>– stateType 传入状态类型执行OnEnter</p>
+</li>
+<li><p>Update轮询<br>–每帧调用Update,增加当前状态机执行时间，通过m_CurrentStateTime</p>
+</li>
+<li><p>GetState 和 GetAllState 可以获取当前注册进状态机的状态</p>
+</li>
+<li><p>GetData,HasData,SetData,MoveData，不同状态的数据交互可以使用这几个函数，所有状态的数据都存放在m_Datas中</p>
+</li>
+<li><p>Shutdown会将引用归还引用池,此方法由FsmManager调用</p>
+</li>
+</ul>
+<h3 id="FsmManager"><a href="#FsmManager" class="headerlink" title="FsmManager"></a>FsmManager</h3><h4 id="1-类定义"><a href="#1-类定义" class="headerlink" title="1. 类定义"></a>1. 类定义</h4><ul>
+<li><strong>命名空间</strong>: <code>GameFramework.Fsm</code></li>
+<li><strong>访问级别</strong>: <code>internal sealed</code>，即该类仅在其所在的程序集中可见，且不能被继承。</li>
+</ul>
+<h4 id="2-字段"><a href="#2-字段" class="headerlink" title="2. 字段"></a>2. 字段</h4><ul>
+<li><code>m_Fsms</code>: <code>Dictionary&lt;TypeNamePair, FsmBase&gt;</code>，用于存储有限状态机的字典，键是 <code>TypeNamePair</code>，值是 <code>FsmBase</code>。</li>
+<li><code>m_TempFsms</code>: <code>List&lt;FsmBase&gt;</code>，用于临时存储有限状态机的列表，主要用于 <code>Update</code> 方法中遍历有限状态机时使用。</li>
+</ul>
+<h4 id="3-属性"><a href="#3-属性" class="headerlink" title="3. 属性"></a>3. 属性</h4><ul>
+<li><code>Priority</code>: 获取模块优先级，值为 <code>60</code>。优先级较高的模块会优先进行轮询，并且关闭操作会在其他模块之后进行。</li>
+<li><code>Count</code>: 获取有限状态机的数量。</li>
+</ul>
+<h4 id="4-方法"><a href="#4-方法" class="headerlink" title="4. 方法"></a>4. 方法</h4><h5 id="公共方法"><a href="#公共方法" class="headerlink" title="公共方法"></a>公共方法</h5><ul>
+<li><code>HasFsm&lt;T&gt;()</code>: 检查是否存在某类型的有限状态机。</li>
+<li><code>HasFsm(Type ownerType)</code>: 检查是否存在指定类型的有限状态机。</li>
+<li><code>HasFsm&lt;T&gt;(string name)</code>: 检查是否存在某类型和名称的有限状态机。</li>
+<li><code>HasFsm(Type ownerType, string name)</code>: 检查是否存在指定类型和名称的有限状态机。</li>
+<li><code>GetFsm&lt;T&gt;()</code>: 获取某类型的有限状态机。</li>
+<li><code>GetFsm(Type ownerType)</code>: 获取指定类型的有限状态机。</li>
+<li><code>GetFsm&lt;T&gt;(string name)</code>: 获取某类型和名称的有限状态机。</li>
+<li><code>GetFsm(Type ownerType, string name)</code>: 获取指定类型和名称的有限状态机。</li>
+<li><code>GetAllFsms()</code>: 获取所有有限状态机，返回一个 <code>FsmBase[]</code> 数组。</li>
+<li><code>GetAllFsms(List&lt;FsmBase&gt; results)</code>: 获取所有有限状态机，并将它们存储在传入的 <code>List&lt;FsmBase&gt;</code> 中。</li>
+<li><code>CreateFsm&lt;T&gt;(T owner, params FsmState&lt;T&gt;[] states)</code>: 创建某类型的有限状态机，并指定状态集合。</li>
+<li><code>CreateFsm&lt;T&gt;(string name, T owner, params FsmState&lt;T&gt;[] states)</code>: 创建某类型和名称的有限状态机，并指定状态集合。</li>
+<li><code>CreateFsm&lt;T&gt;(T owner, List&lt;FsmState&lt;T&gt;&gt; states)</code>: 创建某类型的有限状态机，并指定状态集合（以列表形式）。</li>
+<li><code>CreateFsm&lt;T&gt;(string name, T owner, List&lt;FsmState&lt;T&gt;&gt; states)</code>: 创建某类型和名称的有限状态机，并指定状态集合（以列表形式）。</li>
+<li><code>DestroyFsm&lt;T&gt;()</code>: 销毁某类型的有限状态机。</li>
+<li><code>DestroyFsm(Type ownerType)</code>: 销毁指定类型的有限状态机。</li>
+<li><code>DestroyFsm&lt;T&gt;(string name)</code>: 销毁某类型和名称的有限状态机。</li>
+<li><code>DestroyFsm(Type ownerType, string name)</code>: 销毁指定类型和名称的有限状态机。</li>
+<li><code>DestroyFsm&lt;T&gt;(IFsm&lt;T&gt; fsm)</code>: 销毁某类型的指定有限状态机。</li>
+<li><code>DestroyFsm(FsmBase fsm)</code>: 销毁指定的有限状态机。</li>
+</ul>
+<h5 id="内部方法"><a href="#内部方法" class="headerlink" title="内部方法"></a>内部方法</h5><ul>
+<li><code>Update(float elapseSeconds, float realElapseSeconds)</code>: 轮询有限状态机管理器，用于更新所有有限状态机的状态。</li>
+<li><code>Shutdown()</code>: 关闭并清理有限状态机管理器，销毁所有有限状态机。</li>
+<li><code>InternalHasFsm(TypeNamePair typeNamePair)</code>: 内部方法，检查是否存在指定 <code>TypeNamePair</code> 的有限状态机。</li>
+<li><code>InternalGetFsm(TypeNamePair typeNamePair)</code>: 内部方法，获取指定 <code>TypeNamePair</code> 的有限状态机。</li>
+<li><code>InternalDestroyFsm(TypeNamePair typeNamePair)</code>: 内部方法，销毁指定 <code>TypeNamePair</code> 的有限状态机。</li>
+</ul>
+<h4 id="5-功能"><a href="#5-功能" class="headerlink" title="5. 功能"></a>5. 功能</h4><p><code>FsmManager</code> 是有限状态机的管理器，负责创建、获取、销毁和轮询有限状态机。它为游戏框架提供了一个集中的有限状态机管理功能，并确保各个状态机能够顺利运行和清理。</p>
+]]></content>
       <categories>
         <category>Gameframework</category>
       </categories>
@@ -219,102 +549,50 @@
       </tags>
   </entry>
   <entry>
-    <title>UnityGameframework 状态机</title>
-    <url>/2024/08/16/UnityGameframework-Fsm/</url>
-    <content><![CDATA[<h1 id="FSM状态机-有限状态机"><a href="#FSM状态机-有限状态机" class="headerlink" title="FSM状态机(有限状态机)"></a>FSM状态机(有限状态机)</h1><h2 id="什么是有限状态机"><a href="#什么是有限状态机" class="headerlink" title="什么是有限状态机"></a>什么是有限状态机</h2><ul>
-<li>在有限的状态合集里切换不同状态，执行不同逻辑，通常用于玩家控制，怪物AI，游戏流程控制等</li>
+    <title>Unity Gameframework 序言</title>
+    <url>/2024/08/09/UnityGameframework_00/</url>
+    <content><![CDATA[<h2 id="关于项目使用GameframeWork的记录"><a href="#关于项目使用GameframeWork的记录" class="headerlink" title="关于项目使用GameframeWork的记录"></a>关于项目使用GameframeWork的记录</h2><h3 id="为什么使用GameframeWork？"><a href="#为什么使用GameframeWork？" class="headerlink" title="为什么使用GameframeWork？"></a>为什么使用GameframeWork？</h3><ul>
+<li><strong>作用</strong>：保证项目的支撑性以及约束性;</li>
+<li><strong>为什么不选择自研</strong>：目前因为是新公司，只有两个开发，如果使用自研框架，就算可以保证框架的质量也需要很长的时间，而且我并没有这个能力，调研了不同的框架，像ET、GameFrameWork，都需要很长的时间，需要不断迭代，不断更新，ET到目前已经超过了五年，GameFrameWork从2013-2021年。</li>
 </ul>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../Image/GF-UGF-FSM.drawio.png"
-                      alt="UML 类图"
-                ></p>
-<ul>
-<li>状态机实现包括三个部分，FsmBase,FsmManager,FsmState,Fsm,IFsm,IFsmMananger</li>
-<li>FsmBase,IFsm,Fsm:状态机</li>
-<li>FsmManager,IFsmManager:状态管理器，在整体架构中，每个模块都存在一个管理器</li>
-<li>FsmState:单个状态</li>
+<h2 id="GameFramework-和-ET-的区别"><a href="#GameFramework-和-ET-的区别" class="headerlink" title="GameFramework 和 ET 的区别"></a>GameFramework 和 ET 的区别</h2><h3 id="1-设计理念与架构"><a href="#1-设计理念与架构" class="headerlink" title="1. 设计理念与架构"></a>1. 设计理念与架构</h3><h4 id="GameFramework"><a href="#GameFramework" class="headerlink" title="GameFramework"></a>GameFramework</h4><ul>
+<li><strong>轻量级框架</strong>：GameFramework 是一个轻量级的游戏框架，专注于提供基础的游戏开发功能，如资源管理、UI 管理、事件系统、网络通信、对象池、配置管理等。</li>
+<li><strong>模块化设计</strong>：采用模块化设计，开发者可以根据项目需求选择需要的模块，不必使用全部功能，提升了灵活性和扩展性。</li>
+<li><strong>Unity 集成</strong>：主要为 Unity 引擎设计，旨在简化 Unity 游戏开发的常见任务，提供了许多 Unity 专用的工具和组件。</li>
 </ul>
-<h3 id="FsmState"><a href="#FsmState" class="headerlink" title="FsmState"></a>FsmState</h3><ul>
-<li><p>这里指状态机管理的不同的状态</p>
-</li>
-<li><p>OnInit-&gt;OnEnter-&gt;OnUpdate-&gt;OnLeave-&gt;OnDestroy作为贯穿整个状态的生命周期函数</p>
-</li>
-<li><p>多态函数ChangeState提供切换状态逻辑，实际上是通过传入的状态机调用状态机的ChangeState</p>
-</li>
+<h4 id="ET-ET-Framework"><a href="#ET-ET-Framework" class="headerlink" title="ET (ET Framework)"></a>ET (ET Framework)</h4><ul>
+<li><strong>高性能框架</strong>：ET 是一个高性能的分布式游戏服务器框架，特别适用于大规模在线游戏的服务器端开发。它基于 C# 和 .NET 技术栈，支持多线程和多进程。</li>
+<li><strong>Actor 模型</strong>：使用 Actor 模型来处理并发和通信，将复杂的多线程编程问题简化为消息传递的方式，非常适合处理大规模并发任务。</li>
+<li><strong>分布式系统支持</strong>：提供了强大的分布式系统支持，可以轻松搭建跨服务器、跨进程的系统，适用于大型多人在线游戏（MMO）等需要分布式架构的场景。</li>
 </ul>
-<h3 id="FsmBase"><a href="#FsmBase" class="headerlink" title="FsmBase"></a>FsmBase</h3><ul>
-<li><p>有限状态机基类</p>
-</li>
-<li><p>提供通用属性，通用函数</p>
-</li>
+<h3 id="2-功能与特性"><a href="#2-功能与特性" class="headerlink" title="2. 功能与特性"></a>2. 功能与特性</h3><h4 id="GameFramework-的功能与特性"><a href="#GameFramework-的功能与特性" class="headerlink" title="GameFramework 的功能与特性"></a>GameFramework 的功能与特性</h4><ul>
+<li><strong>面向客户端</strong>：主要功能集中在客户端游戏开发，如资源管理、UI 系统、输入管理、声音管理、以及与 Unity 引擎的深度集成。</li>
+<li><strong>扩展性</strong>：通过插件系统，开发者可以自定义和扩展框架的功能，适合各种中小型游戏项目。</li>
+<li><strong>简易上手</strong>：对于使用 Unity 的开发者来说，GameFramework 的上手门槛较低，易于快速构建游戏原型。</li>
 </ul>
-<h3 id="Fsm"><a href="#Fsm" class="headerlink" title="Fsm"></a>Fsm</h3><ul>
-<li><p>有限状态机继承FsmBase</p>
-</li>
-<li><p>提供Create函数创建状态机(多态)<br>– 名称 name<br>– 持有者 owner<br>– 状态集合 states []:FsmState&lt;T&gt; || states:List&lt;FsmState &lt;T&gt;&gt;<br>– 从引用池获取引用(懒加载) -&gt; 初始化状态机属性 -&gt; 遍历状态列表中的初始化函数OnInit</p>
-</li>
-<li><p>提供Clear函数清理状态机<br>– 退出当前状态 -&gt; 遍历状态列表执行OnDestroy -&gt; 清理状态字典 -&gt; 将变量类返回引用池 -&gt;清空存放变量类字典的数据 -&gt; 清空属性并设置状态机标志</p>
-<details class="[red]" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>变量类 ：Variable </summary>
-              <div class='content'>
-              <ul><li><p>GameFramework.Runtime.Variable : IReference</p></li><li><p>Type:获取变量类型</p></li><li><p>GetValue:获取变量值</p></li><li><p>SetValue:设置变量值</p></li><li><p>Clear:清理变量值</p></li><li><p>可以在创建新的变量类型时继承该类扩写，例如流程模块中：<br>– VarInt32 继承了 Variable,并且提供隐式转换操作符<br>– public static implicit operator VarInt32(int value)<br>– public static implicit operator int(VarInt32 value)</p></li></ul>
-              </div>
-            </details>
-</li>
-<li><p>提供Start开始状态机<br>– stateType 传入状态类型执行OnEnter</p>
-</li>
-<li><p>Update轮询<br>–每帧调用Update,增加当前状态机执行时间，通过m_CurrentStateTime</p>
-</li>
-<li><p>GetState 和 GetAllState 可以获取当前注册进状态机的状态</p>
-</li>
-<li><p>GetData,HasData,SetData,MoveData，不同状态的数据交互可以使用这几个函数，所有状态的数据都存放在m_Datas中</p>
-</li>
-<li><p>Shutdown会将引用归还引用池,此方法由FsmManager调用</p>
-</li>
+<h4 id="ET"><a href="#ET" class="headerlink" title="ET"></a>ET</h4><ul>
+<li><strong>面向服务端</strong>：ET 更侧重于服务端的开发，提供了强大的网络通信、分布式处理、负载均衡等功能，适合需要高并发、高可靠性要求的游戏。</li>
+<li><strong>Actor 模型的并发处理</strong>：利用 Actor 模型处理并发问题，简化了复杂的多线程编程，并提高了系统的可扩展性和可维护性。</li>
+<li><strong>热更新支持</strong>：ET 支持服务端的热更新，可以在不重启服务器的情况下动态更新代码和数据，非常适合长期运营的大型游戏项目。</li>
 </ul>
-<h3 id="FsmManager"><a href="#FsmManager" class="headerlink" title="FsmManager"></a>FsmManager</h3><h4 id="1-类定义"><a href="#1-类定义" class="headerlink" title="1. 类定义"></a>1. 类定义</h4><ul>
-<li><strong>命名空间</strong>: <code>GameFramework.Fsm</code></li>
-<li><strong>访问级别</strong>: <code>internal sealed</code>，即该类仅在其所在的程序集中可见，且不能被继承。</li>
+<h3 id="3-应用场景"><a href="#3-应用场景" class="headerlink" title="3. 应用场景"></a>3. 应用场景</h3><h4 id="GameFramework-的应用场景"><a href="#GameFramework-的应用场景" class="headerlink" title="GameFramework 的应用场景"></a>GameFramework 的应用场景</h4><ul>
+<li>适合中小型 Unity 项目，尤其是单机游戏或简单的联网游戏。对于需要快速开发和原型验证的项目，GameFramework 提供了足够的功能。</li>
+<li>对于那些不需要复杂服务器架构的项目，它是一个非常好的选择。</li>
 </ul>
-<h4 id="2-字段"><a href="#2-字段" class="headerlink" title="2. 字段"></a>2. 字段</h4><ul>
-<li><code>m_Fsms</code>: <code>Dictionary&lt;TypeNamePair, FsmBase&gt;</code>，用于存储有限状态机的字典，键是 <code>TypeNamePair</code>，值是 <code>FsmBase</code>。</li>
-<li><code>m_TempFsms</code>: <code>List&lt;FsmBase&gt;</code>，用于临时存储有限状态机的列表，主要用于 <code>Update</code> 方法中遍历有限状态机时使用。</li>
+<h4 id="ET-的应用场景"><a href="#ET-的应用场景" class="headerlink" title="ET 的应用场景"></a>ET 的应用场景</h4><ul>
+<li>适合大型多人在线游戏（如 MMORPG）、大规模网络游戏，以及对服务端性能和稳定性要求较高的项目。</li>
+<li>对于需要分布式系统支持、复杂逻辑处理和高并发处理的项目，ET 是一个强大的选择。</li>
 </ul>
-<h4 id="3-属性"><a href="#3-属性" class="headerlink" title="3. 属性"></a>3. 属性</h4><ul>
-<li><code>Priority</code>: 获取模块优先级，值为 <code>60</code>。优先级较高的模块会优先进行轮询，并且关闭操作会在其他模块之后进行。</li>
-<li><code>Count</code>: 获取有限状态机的数量。</li>
+<h3 id="4-社区与支持"><a href="#4-社区与支持" class="headerlink" title="4. 社区与支持"></a>4. 社区与支持</h3><h4 id="GameFramework-的社区与支持"><a href="#GameFramework-的社区与支持" class="headerlink" title="GameFramework 的社区与支持"></a>GameFramework 的社区与支持</h4><ul>
+<li>社区活跃，适合 Unity 开发者。提供了较为丰富的文档和教程，有许多开发者在使用和贡献。</li>
 </ul>
-<h4 id="4-方法"><a href="#4-方法" class="headerlink" title="4. 方法"></a>4. 方法</h4><h5 id="公共方法"><a href="#公共方法" class="headerlink" title="公共方法"></a>公共方法</h5><ul>
-<li><code>HasFsm&lt;T&gt;()</code>: 检查是否存在某类型的有限状态机。</li>
-<li><code>HasFsm(Type ownerType)</code>: 检查是否存在指定类型的有限状态机。</li>
-<li><code>HasFsm&lt;T&gt;(string name)</code>: 检查是否存在某类型和名称的有限状态机。</li>
-<li><code>HasFsm(Type ownerType, string name)</code>: 检查是否存在指定类型和名称的有限状态机。</li>
-<li><code>GetFsm&lt;T&gt;()</code>: 获取某类型的有限状态机。</li>
-<li><code>GetFsm(Type ownerType)</code>: 获取指定类型的有限状态机。</li>
-<li><code>GetFsm&lt;T&gt;(string name)</code>: 获取某类型和名称的有限状态机。</li>
-<li><code>GetFsm(Type ownerType, string name)</code>: 获取指定类型和名称的有限状态机。</li>
-<li><code>GetAllFsms()</code>: 获取所有有限状态机，返回一个 <code>FsmBase[]</code> 数组。</li>
-<li><code>GetAllFsms(List&lt;FsmBase&gt; results)</code>: 获取所有有限状态机，并将它们存储在传入的 <code>List&lt;FsmBase&gt;</code> 中。</li>
-<li><code>CreateFsm&lt;T&gt;(T owner, params FsmState&lt;T&gt;[] states)</code>: 创建某类型的有限状态机，并指定状态集合。</li>
-<li><code>CreateFsm&lt;T&gt;(string name, T owner, params FsmState&lt;T&gt;[] states)</code>: 创建某类型和名称的有限状态机，并指定状态集合。</li>
-<li><code>CreateFsm&lt;T&gt;(T owner, List&lt;FsmState&lt;T&gt;&gt; states)</code>: 创建某类型的有限状态机，并指定状态集合（以列表形式）。</li>
-<li><code>CreateFsm&lt;T&gt;(string name, T owner, List&lt;FsmState&lt;T&gt;&gt; states)</code>: 创建某类型和名称的有限状态机，并指定状态集合（以列表形式）。</li>
-<li><code>DestroyFsm&lt;T&gt;()</code>: 销毁某类型的有限状态机。</li>
-<li><code>DestroyFsm(Type ownerType)</code>: 销毁指定类型的有限状态机。</li>
-<li><code>DestroyFsm&lt;T&gt;(string name)</code>: 销毁某类型和名称的有限状态机。</li>
-<li><code>DestroyFsm(Type ownerType, string name)</code>: 销毁指定类型和名称的有限状态机。</li>
-<li><code>DestroyFsm&lt;T&gt;(IFsm&lt;T&gt; fsm)</code>: 销毁某类型的指定有限状态机。</li>
-<li><code>DestroyFsm(FsmBase fsm)</code>: 销毁指定的有限状态机。</li>
+<h4 id="ET-的社区与支持"><a href="#ET-的社区与支持" class="headerlink" title="ET 的社区与支持"></a>ET 的社区与支持</h4><ul>
+<li>社区主要集中在服务端开发人员，讨论的内容多与服务器架构、高并发、分布式系统相关。ET 的文档较为完善，但由于其复杂性，学习曲线可能较陡。</li>
 </ul>
-<h5 id="内部方法"><a href="#内部方法" class="headerlink" title="内部方法"></a>内部方法</h5><ul>
-<li><code>Update(float elapseSeconds, float realElapseSeconds)</code>: 轮询有限状态机管理器，用于更新所有有限状态机的状态。</li>
-<li><code>Shutdown()</code>: 关闭并清理有限状态机管理器，销毁所有有限状态机。</li>
-<li><code>InternalHasFsm(TypeNamePair typeNamePair)</code>: 内部方法，检查是否存在指定 <code>TypeNamePair</code> 的有限状态机。</li>
-<li><code>InternalGetFsm(TypeNamePair typeNamePair)</code>: 内部方法，获取指定 <code>TypeNamePair</code> 的有限状态机。</li>
-<li><code>InternalDestroyFsm(TypeNamePair typeNamePair)</code>: 内部方法，销毁指定 <code>TypeNamePair</code> 的有限状态机。</li>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li><strong>GameFramework</strong> 更适合那些需要快速开发、依赖 Unity 的中小型游戏项目，提供了良好的客户端开发支持。</li>
+<li><strong>ET</strong> 则适合那些需要构建复杂的分布式系统、大型在线游戏的项目，特别是在服务端开发和高并发处理方面表现出色。</li>
 </ul>
-<h4 id="5-功能"><a href="#5-功能" class="headerlink" title="5. 功能"></a>5. 功能</h4><p><code>FsmManager</code> 是有限状态机的管理器，负责创建、获取、销毁和轮询有限状态机。它为游戏框架提供了一个集中的有限状态机管理功能，并确保各个状态机能够顺利运行和清理。</p>
 ]]></content>
       <categories>
         <category>Gameframework</category>
@@ -374,56 +652,117 @@
       </tags>
   </entry>
   <entry>
-    <title>Unity Gameframework 序言</title>
-    <url>/2024/08/09/UnityGameframework_00/</url>
-    <content><![CDATA[<h2 id="关于项目使用GameframeWork的记录"><a href="#关于项目使用GameframeWork的记录" class="headerlink" title="关于项目使用GameframeWork的记录"></a>关于项目使用GameframeWork的记录</h2><h3 id="为什么使用GameframeWork？"><a href="#为什么使用GameframeWork？" class="headerlink" title="为什么使用GameframeWork？"></a>为什么使用GameframeWork？</h3><ul>
-<li><strong>作用</strong>：保证项目的支撑性以及约束性;</li>
-<li><strong>为什么不选择自研</strong>：目前因为是新公司，只有两个开发，如果使用自研框架，就算可以保证框架的质量也需要很长的时间，而且我并没有这个能力，调研了不同的框架，像ET、GameFrameWork，都需要很长的时间，需要不断迭代，不断更新，ET到目前已经超过了五年，GameFrameWork从2013-2021年。</li>
+    <title>Unity-YooAsset+Hybridclr</title>
+    <url>/2024/09/05/UnityYooAsset-Hybridclr/</url>
+    <content><![CDATA[<h2 id="本篇主要记录在项目中如何使用YooAsset-Hybridclr-带上痛苦面具的三天"><a href="#本篇主要记录在项目中如何使用YooAsset-Hybridclr-带上痛苦面具的三天" class="headerlink" title="本篇主要记录在项目中如何使用YooAsset+Hybridclr (带上痛苦面具的三天)"></a>本篇主要记录在项目中如何使用YooAsset+Hybridclr (带上痛苦面具的三天)</h2><p><strong>启动流程:</strong></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../Image/GF-UGF-StartProcedure.drawio.png"
+                      alt="GameProcedure"
+                ></p>
+<p><strong>YooAsset使用方式</strong></p>
+<a class="button  center large" href='../../../../2024/08/30/UnityYooAsset-instances/' title='YooAsset-实践'><i class='fa fa-solid fa-arrow-right fa-beat-fade'></i> YooAsset-实践</a>
+
+<p><strong>HybridCLR使用方式</strong></p>
+<a class="button  center large" href='../../../../2024/09/05/Unity-Hybridclr-instance/' title='HybridCLR-实践'><i class='fa fa-solid fa-arrow-right fa-beat-fade'></i> HybridCLR-实践</a>
+
+<h2 id="如何结合YooAsset-HybridCLR-实践"><a href="#如何结合YooAsset-HybridCLR-实践" class="headerlink" title="如何结合YooAsset+HybridCLR-实践"></a>如何结合YooAsset+HybridCLR-实践</h2><ul>
+<li>HybridCLR文档中提过，我们需要把项目代码拆分成AOT程序集以及HotFix程序集，如果觉得是个非常痛苦的过程，主要是对程序集这个概念理解不透彻</li>
 </ul>
-<h2 id="GameFramework-和-ET-的区别"><a href="#GameFramework-和-ET-的区别" class="headerlink" title="GameFramework 和 ET 的区别"></a>GameFramework 和 ET 的区别</h2><h3 id="1-设计理念与架构"><a href="#1-设计理念与架构" class="headerlink" title="1. 设计理念与架构"></a>1. 设计理念与架构</h3><h4 id="GameFramework"><a href="#GameFramework" class="headerlink" title="GameFramework"></a>GameFramework</h4><ul>
-<li><strong>轻量级框架</strong>：GameFramework 是一个轻量级的游戏框架，专注于提供基础的游戏开发功能，如资源管理、UI 管理、事件系统、网络通信、对象池、配置管理等。</li>
-<li><strong>模块化设计</strong>：采用模块化设计，开发者可以根据项目需求选择需要的模块，不必使用全部功能，提升了灵活性和扩展性。</li>
-<li><strong>Unity 集成</strong>：主要为 Unity 引擎设计，旨在简化 Unity 游戏开发的常见任务，提供了许多 Unity 专用的工具和组件。</li>
+<details class="red" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>程序集 </summary>
+              <div class='content'>
+              <ul><li>在 Unity 中，程序集（Assembly） 是用来组织和编译脚本代码的基本单元。通过合理管理程序集，可以提高项目的编译效率、模块化程度以及代码的可维护性。</li></ul><p class='h3' id="Unity-中程序集的基本概念"><a href="#Unity-中程序集的基本概念" class="headerlink" title="Unity 中程序集的基本概念"></a>Unity 中程序集的基本概念</h3><ul><li>程序集（Assembly）：在 .NET&#x2F;Mono 环境下，程序集是编译后的代码库，通常以 .dll 文件的形式存在。Unity 使用程序集来管理和隔离不同的脚本代码。</li><li>默认程序集：Unity 为项目中的脚本自动生成一些默认程序集，例如：</li><li>Assembly-CSharp.dll：包含 Assets 目录下 Scripts 文件夹中的所有脚本（默认）。</li><li>Assembly-CSharp-Editor.dll：包含 Editor 文件夹下的所有编辑器脚本。</li><li>其他根据项目结构自动生成的程序集。</li></ul><p><strong>使用 Assembly Definition Files（.asmdef）管理程序集：</strong></p><ul><li>为了更好地控制和优化程序集，Unity 提供了 Assembly Definition Files（简称 .asmdef 文件）。通过创建和配置 .asmdef 文件，可以自定义程序集的划分。</li></ul><p><strong>创建 .asmdef 文件：</strong></p><ul><li>在 Unity 编辑器的 Project 窗口中，右键点击需要创建程序集的文件夹。</li><li>选择 Create &gt; Assembly Definition，为新程序集命名，例如 MyCustomAssembly。</li></ul><p><strong>配置 .asmdef 文件：</strong></p><ul><li>选中刚创建的 .asmdef 文件，在 Inspector 窗口中进行配置。</li><li>Name：程序集的名称。</li><li>References：添加该程序集所依赖的其他程序集。</li><li>Platforms：指定程序集适用的平台。</li><li>Optional References：可选的程序集引用。</li><li>Define Constraints：定义条件编译符号。</li></ul><p><strong>管理程序集的最佳实践：</strong></p><ul><li>模块化：将项目划分为多个独立的模块，每个模块对应一个程序集。这有助于提高代码的可维护性和复用性。</li><li>减少依赖：尽量减少程序集之间的相互依赖，避免产生循环引用。使用接口或事件机制来解耦模块。</li><li>分离编辑器代码和运行时代码：将编辑器相关的脚本放在独立的编辑器程序集（通常在 Editor 文件夹中）中，避免在构建时包含不必要的代码。</li><li>命名规范：为程序集命名时，采用有意义且易于识别的名称，便于团队协作和代码管理。</li><li>优化编译时间：通过合理划分程序集，减少每次代码更改时需要重新编译的范围，从而提升整体编译速度。</li></ul>
+              </div>
+            </details>
+
+<h4 id="拆分程序集"><a href="#拆分程序集" class="headerlink" title="拆分程序集"></a>拆分程序集</h4><ul>
+<li><p>拆分<br>Assets&#x2F;<br>└── _GameMain&#x2F;<br>  ├──_Const&#x2F;<br>  │   ├── Const.asmdef<br>  │   └── Constants.cs<br>  ├──_Boot&#x2F;<br>  │   ├── Boot.asmdef<br>  │   └── BootManager.cs<br>  ├──_ConfigBaseScript&#x2F;<br>  │   ├── ConfigBaseScript.asmdef<br>  │   └── BaseConfig.cs<br>  ├──_Manager&#x2F;<br>  │   ├── Manager.asmdef<br>  │   └── GameManager.cs<br>  ├──_Scripts&#x2F;<br>  │   ├── Scripts.asmdef<br>  │   └── HotfixLogic.cs<br>  └──_Util&#x2F;<br>  ├── Util.asmdef<br>  └── Utility.cs</p>
+</li>
+<li><p>当程序集内脚本引用了别的程序集的脚本，需要设置对应引用</p>
+</li>
+<li><p>点击Assembly Definition Asset中Assembly Definition Reference-&gt;添加程序集</p>
+</li>
 </ul>
-<h4 id="ET-ET-Framework"><a href="#ET-ET-Framework" class="headerlink" title="ET (ET Framework)"></a>ET (ET Framework)</h4><ul>
-<li><strong>高性能框架</strong>：ET 是一个高性能的分布式游戏服务器框架，特别适用于大规模在线游戏的服务器端开发。它基于 C# 和 .NET 技术栈，支持多线程和多进程。</li>
-<li><strong>Actor 模型</strong>：使用 Actor 模型来处理并发和通信，将复杂的多线程编程问题简化为消息传递的方式，非常适合处理大规模并发任务。</li>
-<li><strong>分布式系统支持</strong>：提供了强大的分布式系统支持，可以轻松搭建跨服务器、跨进程的系统，适用于大型多人在线游戏（MMO）等需要分布式架构的场景。</li>
+<p><strong>例如：</strong></p>
+<ul>
+<li>A.Assembly[AClass,DClass,EClass]</li>
+<li>B.Assembly[BClass,CClass]</li>
+<li>A.Assembly ref B.Assembly -&gt; AClass ref BClass A程序集引用了B程序集后，AClass才能调用BClass</li>
+<li>注意循环引用，如果需要相互引用，需要抽象一层，接口或者类都行</li>
 </ul>
-<h3 id="2-功能与特性"><a href="#2-功能与特性" class="headerlink" title="2. 功能与特性"></a>2. 功能与特性</h3><h4 id="GameFramework-的功能与特性"><a href="#GameFramework-的功能与特性" class="headerlink" title="GameFramework 的功能与特性"></a>GameFramework 的功能与特性</h4><ul>
-<li><strong>面向客户端</strong>：主要功能集中在客户端游戏开发，如资源管理、UI 系统、输入管理、声音管理、以及与 Unity 引擎的深度集成。</li>
-<li><strong>扩展性</strong>：通过插件系统，开发者可以自定义和扩展框架的功能，适合各种中小型游戏项目。</li>
-<li><strong>简易上手</strong>：对于使用 Unity 的开发者来说，GameFramework 的上手门槛较低，易于快速构建游戏原型。</li>
+<h4 id="打包程序集"><a href="#打包程序集" class="headerlink" title="打包程序集"></a>打包程序集</h4><ul>
+<li>Project Setting-&gt;GtvrudCLR Settings-&gt;<code>Hot UpdateAssembly Deinitions</code>-&gt;添加你需要热更的程序集</li>
+<li>Project Setting-&gt;GtvrudCLR Settings-&gt;<code>Patch AOT Assemblies</code>-&gt;补充元数据</li>
 </ul>
-<h4 id="ET"><a href="#ET" class="headerlink" title="ET"></a>ET</h4><ul>
-<li><strong>面向服务端</strong>：ET 更侧重于服务端的开发，提供了强大的网络通信、分布式处理、负载均衡等功能，适合需要高并发、高可靠性要求的游戏。</li>
-<li><strong>Actor 模型的并发处理</strong>：利用 Actor 模型处理并发问题，简化了复杂的多线程编程，并提高了系统的可扩展性和可维护性。</li>
-<li><strong>热更新支持</strong>：ET 支持服务端的热更新，可以在不重启服务器的情况下动态更新代码和数据，非常适合长期运营的大型游戏项目。</li>
+<a class="button  center large" href='<https://hybridclr.doc.code-philosophy.com/docs/beginner/generic' title='<font size=2>元数据补充相关文档</font>'><i class='fa> fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>元数据补充相关文档</font></a>
+
+<ul>
+<li>工具栏-&gt;HybridCLR-&gt;CompileDll</li>
+<li>DLL会生成在<code>ProjectName/HybridCLRData/HotUpdateDlls</code>下</li>
+<li>找到我们的需要热更的DLL 复制到 Asset&#x2F;DllCollect,添加后缀Bytes,方便后续通过Yooasset使用TextAsset加载</li>
+<li>可以通过editor脚本生成并复制（参考示例项目）</li>
 </ul>
-<h3 id="3-应用场景"><a href="#3-应用场景" class="headerlink" title="3. 应用场景"></a>3. 应用场景</h3><h4 id="GameFramework-的应用场景"><a href="#GameFramework-的应用场景" class="headerlink" title="GameFramework 的应用场景"></a>GameFramework 的应用场景</h4><ul>
-<li>适合中小型 Unity 项目，尤其是单机游戏或简单的联网游戏。对于需要快速开发和原型验证的项目，GameFramework 提供了足够的功能。</li>
-<li>对于那些不需要复杂服务器架构的项目，它是一个非常好的选择。</li>
+<a class="button  center large" href='<https://github.com/focus-creative-games/hybridclr_trial' title='<font size=2>示例项目</font>'><i class='fa> fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>示例项目</font></a>
+
+<h4 id="Yooasset打包资源"><a href="#Yooasset打包资源" class="headerlink" title="Yooasset打包资源"></a>Yooasset打包资源</h4><ul>
+<li>工具栏-&gt;YooAsset-&gt;AssetBundle Collector-&gt;设置需要收集的资源-&gt;save</li>
+<li>工具栏-&gt;YooAsset-&gt;AssetBundle Builder-&gt;Build</li>
+<li>Project&#x2F;Bundle&#x2F;[版本文件夹]&#x2F;[资源]</li>
 </ul>
-<h4 id="ET-的应用场景"><a href="#ET-的应用场景" class="headerlink" title="ET 的应用场景"></a>ET 的应用场景</h4><ul>
-<li>适合大型多人在线游戏（如 MMORPG）、大规模网络游戏，以及对服务端性能和稳定性要求较高的项目。</li>
-<li>对于需要分布式系统支持、复杂逻辑处理和高并发处理的项目，ET 是一个强大的选择。</li>
+<p><strong>注意:</strong></p>
+<ul>
+<li>收集Dll需要FileIgnoreRule需要选择RawFileIgnoreRule</li>
+<li>打开定位寻址需要保证所有的资源名称不重复，因为内部会通过字典收集这些地址，会导致Key重复，构建出错<a class="button  center large" href='../../../../2024/08/28/UnityYooAsset/' title='<font size=2>了解如何收集与构建资源</font>'><i class='fa fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>了解如何收集与构建资源</font></a></li>
 </ul>
-<h3 id="4-社区与支持"><a href="#4-社区与支持" class="headerlink" title="4. 社区与支持"></a>4. 社区与支持</h3><h4 id="GameFramework-的社区与支持"><a href="#GameFramework-的社区与支持" class="headerlink" title="GameFramework 的社区与支持"></a>GameFramework 的社区与支持</h4><ul>
-<li>社区活跃，适合 Unity 开发者。提供了较为丰富的文档和教程，有许多开发者在使用和贡献。</li>
+<h4 id="搭建一个本地文件服务器"><a href="#搭建一个本地文件服务器" class="headerlink" title="搭建一个本地文件服务器"></a>搭建一个本地文件服务器</h4><ul>
+<li>我这里直接用的软件<a class="button  center large" href='<https://www.rejetto.com/hfs/' title='<font size=2>一键搭建软件</font>'><i class='fa> fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>一键搭建软件</font></a></li>
+<li>将YooAsset打包的资源放到本地文件服务器里</li>
+<li>创建配置脚本</li>
 </ul>
-<h4 id="ET-的社区与支持"><a href="#ET-的社区与支持" class="headerlink" title="ET 的社区与支持"></a>ET 的社区与支持</h4><ul>
-<li>社区主要集中在服务端开发人员，讨论的内容多与服务器架构、高并发、分布式系统相关。ET 的文档较为完善，但由于其复杂性，学习曲线可能较陡。</li>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>CdnConfig</span></figcaption><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CdnConfig</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> AndroidPath = <span class="string">&quot;CDN/Android/DefaultPackage/&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> IOSPath = <span class="string">&quot;CDN/iOS/DefaultPackage/&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> WindowsPath = <span class="string">&quot;CDN/StandaloneWindows64/DefaultPackage/&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> CdnServicesUrl = <span class="string">&quot;http://192.168.57.105:8080/&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> FailedServicesUrl = <span class="string">&quot;http://192.168.57.105:8080/&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> ResourceVersion = <span class="string">&quot;v0.0&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 获取对应平台资源链接</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;returns&gt;</span>对应平台CDN资源服务链接<span class="doctag">&lt;/returns&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">GetUrlByPlatfrom</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> FindUrlByPlatfrom();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 获取对应平台资源链接</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name=&quot;runtimePlatform&quot;&gt;</span>想要获取的平台<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;returns&gt;</span><span class="doctag">&lt;/returns&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">GetUrlByPlatfrom</span>(<span class="params">RuntimePlatform runtimePlatform</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> FindUrlByPlatfrom(runtimePlatform);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">FindUrlByPlatfrom</span>(<span class="params">RuntimePlatform runtimePlatform = <span class="literal">default</span>, <span class="built_in">string</span> resourceVersion = <span class="literal">null</span></span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (runtimePlatform == <span class="literal">default</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            runtimePlatform = Application.platform;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (resourceVersion == <span class="literal">null</span>) resourceVersion = ResourceVersion;</span><br><span class="line">        <span class="keyword">switch</span> (runtimePlatform)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.Android:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;AndroidPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.IPhonePlayer:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;IOSPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.WindowsPlayer:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;WindowsPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.WindowsEditor:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;WindowsPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="literal">default</span>:</span><br><span class="line">                Log.Error(<span class="string">$&quot;检测到不兼容平台<span class="subst">&#123;runtimePlatform&#125;</span>&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">default</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>联机模式下加载</li>
 </ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
-<li><strong>GameFramework</strong> 更适合那些需要快速开发、依赖 Unity 的中小型游戏项目，提供了良好的客户端开发支持。</li>
-<li><strong>ET</strong> 则适合那些需要构建复杂的分布式系统、大型在线游戏的项目，特别是在服务端开发和高并发处理方面表现出色。</li>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>StrategtSelect.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">//策略选择器</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">StrategtSelect</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Dictionary&lt;EPlayMode, Func&lt;IYooAssetInitializationStrategy&gt;&gt; modeMap =</span><br><span class="line">        <span class="keyword">new</span> Dictionary&lt;EPlayMode, Func&lt;IYooAssetInitializationStrategy&gt;&gt;()</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; EPlayMode.EditorSimulateMode, () =&gt; <span class="keyword">new</span> EditorSimulateModeStrategy() &#125;,</span><br><span class="line">        &#123; EPlayMode.OfflinePlayMode, () =&gt; <span class="keyword">new</span> OfflinePlayModeStrategy() &#125;,</span><br><span class="line">        &#123; EPlayMode.HostPlayMode, () =&gt; <span class="keyword">new</span> HostPlayModeStrategy() &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IYooAssetInitializationStrategy <span class="title">GetStrategyByPlayMode</span>(<span class="params">EPlayMode mode</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (modeMap.TryGetValue(mode, <span class="keyword">out</span> <span class="keyword">var</span> strategy))</span><br><span class="line">            <span class="keyword">return</span> strategy();</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            Log.Error(<span class="string">$&quot;No strategy found for play mode: <span class="subst">&#123;mode&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 若找不到返回默认策略</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> HostPlayModeStrategy();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>IYooAssetInitializationStrategy.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">//策略初始化接口</span></span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IYooAssetInitializationStrategy</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">Initialize</span>(<span class="params">ResourcePackage package</span>)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>AInitializeYooAsset.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//策略基类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title">BaseStrategy</span> : <span class="title">IYooAssetInitializationStrategy</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> IEnumerator <span class="title">Initialize</span>(<span class="params">ResourcePackage package</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">InitializePackageAsync</span>(<span class="params">ResourcePackage package, InitializeParameters initParameters</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Log.Info(<span class="string">&quot;初始化包&quot;</span>);</span><br><span class="line">        <span class="comment">// 异步执行初始化操作</span></span><br><span class="line">        <span class="keyword">var</span> initOperation = package.InitializeAsync(initParameters);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> initOperation;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 根据初始化结果记录日志</span></span><br><span class="line">        <span class="keyword">if</span> (initOperation.Status == EOperationStatus.Succeed)</span><br><span class="line">            Log.Info(<span class="string">&quot;资源包初始化成功！&quot;</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            Log.Error(<span class="string">$&quot;资源包初始化失败：<span class="subst">&#123;initOperation.Error&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//策略实现</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HostPlayModeStrategy</span> : <span class="title">BaseStrategy</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> IEnumerator <span class="title">Initialize</span>(<span class="params">ResourcePackage package</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 远程资源模式初始化逻辑</span></span><br><span class="line">        <span class="comment">// <span class="doctag">TODO:</span> 联机运行模式初始化逻辑</span></span><br><span class="line">        IRemoteServices remoteServices = <span class="keyword">new</span> RemoteServices(CdnConfig.GetUrlByPlatfrom(), CdnConfig.GetUrlByPlatfrom());</span><br><span class="line">        <span class="keyword">var</span> cacheFileSystem = FileSystemParameters.CreateDefaultCacheFileSystemParameters(remoteServices,<span class="keyword">new</span> FileDecryption());</span><br><span class="line">        <span class="keyword">var</span> initParameters = <span class="keyword">new</span> HostPlayModeParameters();</span><br><span class="line">        initParameters.CacheFileSystemParameters = cacheFileSystem;</span><br><span class="line">        <span class="keyword">var</span> initOperation = InitializePackageAsync(package, initParameters);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> initOperation;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>YooAssetsMgr.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> Cysharp.Threading.Tasks;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> Cysharp.Threading.Tasks;</span><br><span class="line"><span class="keyword">using</span> Framework;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.UI;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IAssetDownloader</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">UniTask <span class="title">Download</span>()</span>;</span><br><span class="line">    <span class="function">ResourceDownloaderOperation <span class="title">GetDownloader</span>()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnDownloadErrorFunction</span>(<span class="params"><span class="built_in">string</span> fileName, <span class="built_in">string</span> error</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnDownloadProgressUpdateFunction</span>(<span class="params"><span class="built_in">int</span> totalDownloadCount, <span class="built_in">int</span> currentDownloadCount, <span class="built_in">long</span> totalDownloadBytes, <span class="built_in">long</span> currentDownloadBytes</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnDownloadOverFunction</span>(<span class="params"><span class="built_in">bool</span> isSucceed</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnStartDownloadFileFunction</span>(<span class="params"><span class="built_in">string</span> fileName, <span class="built_in">long</span> sizeBytes</span>)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">YooAssetsMgr</span> : <span class="title">IAssetDownloader</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> IYooAssetInitializationStrategy initializationStrategy;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">StartLoadAsset</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> initializationStrategy.Initialize(curResourcePackage);<span class="comment">//初始化当前模式资源包</span></span><br><span class="line">        <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">RequestPackageVersion</span>()</span>;<span class="comment">//请求包版本</span></span><br><span class="line">        <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">UpdatePackageManifest</span>()</span>;<span class="comment">//请求包清单</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>初始化包信息完成后</li>
+<li>通过curResourcePackage.CreateResourceDownloader(int downloadingMaxNumber, int failedTryAgain, int timeout &#x3D; 60)获取下载器</li>
+<li>下载器提供TotalDownloadCount属性判断是否有新的内容需要下载</li>
+<li>下载完成后我们的资源也全都到位了</li>
+<li>通过LoadAssetSync同步加载我们的热更模块以及入口对象</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>ProcedureLoadAssetDown.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> textAsset = YooAssets.LoadAssetSync(<span class="string">&quot;Hotfix.dll&quot;</span>).AssetObject <span class="keyword">as</span> TextAsset;</span><br><span class="line">Assembly.Load(textAsset.bytes);</span><br><span class="line"><span class="keyword">var</span> initObject = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;Assets/Art/ScriptPrefab/BootHotfixEntrace.prefab&quot;</span>);</span><br><span class="line">GameObject.Instantiate(initObject.AssetObject);</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>在Awake 调用补充元数据函数</li>
+<li>Start中加载首页需要展示的内容</li>
+</ul>
+<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>BootHotfixEntrace.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> HybridCLR;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">BootHotfixEntrace</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">LoadMetadataForAOTAssemblies</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        List&lt;<span class="built_in">string</span>&gt; aotMetaAssemblyFiles = <span class="keyword">new</span> List&lt;<span class="built_in">string</span>&gt;()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;mscorlib.dll&quot;</span>,</span><br><span class="line">            <span class="string">&quot;System.dll&quot;</span>,</span><br><span class="line">            <span class="string">&quot;System.Core.dll&quot;</span>,</span><br><span class="line">            <span class="string">&quot;UniTask.dll&quot;</span>,</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 注意，补充元数据是给AOT dll补充元数据，而不是给热更新dll补充元数据。</span></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 热更新dll不缺元数据，不需要补充，如果调用LoadMetadataForAOTAssembly会返回错误</span></span><br><span class="line">        HomologousImageMode mode = HomologousImageMode.SuperSet;</span><br><span class="line">        <span class="keyword">var</span> package = GameMgr.Inst.yooAssetsMgr.curResourcePackage;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> aotDllName <span class="keyword">in</span> aotMetaAssemblyFiles)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> handle = package.LoadAssetSync&lt;TextAsset&gt;(aotDllName);</span><br><span class="line">            <span class="keyword">var</span> dllBytes = handle.AssetObject <span class="keyword">as</span> TextAsset;</span><br><span class="line">            <span class="comment">// 加载assembly对应的dll，会自动为它hook。一旦aot泛型函数的native函数不存在，用解释器版本代码</span></span><br><span class="line">            LoadImageErrorCode err = RuntimeApi.LoadMetadataForAOTAssembly(dllBytes.bytes, mode);</span><br><span class="line">            Debug.Log(<span class="string">$&quot;LoadMetadataForAOTAssembly:<span class="subst">&#123;aotDllName&#125;</span>. mode:<span class="subst">&#123;mode&#125;</span> ret:<span class="subst">&#123;err&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Awake</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        LoadMetadataForAOTAssemblies();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> LoginPanel = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;xxx.prefab&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> MainPanel = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;xxxx.prefab&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> ActorPar = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;xxxxx.prefab&quot;</span>);</span><br><span class="line">        Framework.EventListener.Instance.<span class="keyword">on</span>(EventConst.LOGIN_END, () =&gt;</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;资源释放&quot;</span>);</span><br><span class="line">            LoginPanel.Release();</span><br><span class="line">        &#125;);</span><br><span class="line">        Instantiate(MainPanel.AssetObject);</span><br><span class="line">        <span class="keyword">var</span> obj = Instantiate(LoginPanel.AssetObject <span class="keyword">as</span> GameObject, GameObject.Find(<span class="string">&quot;Canvas&quot;</span>).transform);</span><br><span class="line">        obj.SetActive(<span class="literal">true</span>);</span><br><span class="line">        <span class="keyword">var</span> enter_obj = obj.transform.Find(<span class="string">&quot;enter_btn&quot;</span>);</span><br><span class="line">        enter_obj.gameObject.SetActive(<span class="literal">true</span>);</span><br><span class="line">        Instantiate(ActorPar.AssetObject);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<h4 id="热更DLL"><a href="#热更DLL" class="headerlink" title="热更DLL"></a>热更DLL</h4><ul>
+<li>修改热更代码-&gt;重新build资源包-&gt;替换服务器资源-&gt;YooAsset会检查对应的package.json内的版本号查看差异并刷新清单下载新的内容</li>
+<li>资源同上，具体看不同HybridCLR与YooAsset的实践文章</li>
+</ul>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><ul>
+<li>使用过程中其实出现了很多问题，需要常看两个框架的文档，里面有常见问题的解决方案。</li>
+<li>例如AOT模块不能依赖热更模块</li>
+<li>加载资源会生成句柄，不使用需要及时回收，否则后造成内存泄漏</li>
 </ul>
 ]]></content>
       <categories>
-        <category>Gameframework</category>
+        <category>YooAsset,Hybridclr</category>
       </categories>
       <tags>
-        <tag>游戏框架记录</tag>
+        <tag>资源管理,热更</tag>
       </tags>
   </entry>
   <entry>
@@ -858,345 +1197,6 @@
       </categories>
       <tags>
         <tag>资源管理</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity-YooAsset+Hybridclr</title>
-    <url>/2024/09/05/UnityYooAsset-Hybridclr/</url>
-    <content><![CDATA[<h2 id="本篇主要记录在项目中如何使用YooAsset-Hybridclr-带上痛苦面具的三天"><a href="#本篇主要记录在项目中如何使用YooAsset-Hybridclr-带上痛苦面具的三天" class="headerlink" title="本篇主要记录在项目中如何使用YooAsset+Hybridclr (带上痛苦面具的三天)"></a>本篇主要记录在项目中如何使用YooAsset+Hybridclr (带上痛苦面具的三天)</h2><p><strong>启动流程:</strong></p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../Image/GF-UGF-StartProcedure.drawio.png"
-                      alt="GameProcedure"
-                ></p>
-<p><strong>YooAsset使用方式</strong></p>
-<a class="button  center large" href='../../../../2024/08/30/UnityYooAsset-instances/' title='YooAsset-实践'><i class='fa fa-solid fa-arrow-right fa-beat-fade'></i> YooAsset-实践</a>
-
-<p><strong>HybridCLR使用方式</strong></p>
-<a class="button  center large" href='../../../../2024/09/05/Unity-Hybridclr-instance/' title='HybridCLR-实践'><i class='fa fa-solid fa-arrow-right fa-beat-fade'></i> HybridCLR-实践</a>
-
-<h2 id="如何结合YooAsset-HybridCLR-实践"><a href="#如何结合YooAsset-HybridCLR-实践" class="headerlink" title="如何结合YooAsset+HybridCLR-实践"></a>如何结合YooAsset+HybridCLR-实践</h2><ul>
-<li>HybridCLR文档中提过，我们需要把项目代码拆分成AOT程序集以及HotFix程序集，如果觉得是个非常痛苦的过程，主要是对程序集这个概念理解不透彻</li>
-</ul>
-<details class="red" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>程序集 </summary>
-              <div class='content'>
-              <ul><li>在 Unity 中，程序集（Assembly） 是用来组织和编译脚本代码的基本单元。通过合理管理程序集，可以提高项目的编译效率、模块化程度以及代码的可维护性。</li></ul><p class='h3' id="Unity-中程序集的基本概念"><a href="#Unity-中程序集的基本概念" class="headerlink" title="Unity 中程序集的基本概念"></a>Unity 中程序集的基本概念</h3><ul><li>程序集（Assembly）：在 .NET&#x2F;Mono 环境下，程序集是编译后的代码库，通常以 .dll 文件的形式存在。Unity 使用程序集来管理和隔离不同的脚本代码。</li><li>默认程序集：Unity 为项目中的脚本自动生成一些默认程序集，例如：</li><li>Assembly-CSharp.dll：包含 Assets 目录下 Scripts 文件夹中的所有脚本（默认）。</li><li>Assembly-CSharp-Editor.dll：包含 Editor 文件夹下的所有编辑器脚本。</li><li>其他根据项目结构自动生成的程序集。</li></ul><p><strong>使用 Assembly Definition Files（.asmdef）管理程序集：</strong></p><ul><li>为了更好地控制和优化程序集，Unity 提供了 Assembly Definition Files（简称 .asmdef 文件）。通过创建和配置 .asmdef 文件，可以自定义程序集的划分。</li></ul><p><strong>创建 .asmdef 文件：</strong></p><ul><li>在 Unity 编辑器的 Project 窗口中，右键点击需要创建程序集的文件夹。</li><li>选择 Create &gt; Assembly Definition，为新程序集命名，例如 MyCustomAssembly。</li></ul><p><strong>配置 .asmdef 文件：</strong></p><ul><li>选中刚创建的 .asmdef 文件，在 Inspector 窗口中进行配置。</li><li>Name：程序集的名称。</li><li>References：添加该程序集所依赖的其他程序集。</li><li>Platforms：指定程序集适用的平台。</li><li>Optional References：可选的程序集引用。</li><li>Define Constraints：定义条件编译符号。</li></ul><p><strong>管理程序集的最佳实践：</strong></p><ul><li>模块化：将项目划分为多个独立的模块，每个模块对应一个程序集。这有助于提高代码的可维护性和复用性。</li><li>减少依赖：尽量减少程序集之间的相互依赖，避免产生循环引用。使用接口或事件机制来解耦模块。</li><li>分离编辑器代码和运行时代码：将编辑器相关的脚本放在独立的编辑器程序集（通常在 Editor 文件夹中）中，避免在构建时包含不必要的代码。</li><li>命名规范：为程序集命名时，采用有意义且易于识别的名称，便于团队协作和代码管理。</li><li>优化编译时间：通过合理划分程序集，减少每次代码更改时需要重新编译的范围，从而提升整体编译速度。</li></ul>
-              </div>
-            </details>
-
-<h4 id="拆分程序集"><a href="#拆分程序集" class="headerlink" title="拆分程序集"></a>拆分程序集</h4><ul>
-<li><p>拆分<br>Assets&#x2F;<br>└── _GameMain&#x2F;<br>  ├──_Const&#x2F;<br>  │   ├── Const.asmdef<br>  │   └── Constants.cs<br>  ├──_Boot&#x2F;<br>  │   ├── Boot.asmdef<br>  │   └── BootManager.cs<br>  ├──_ConfigBaseScript&#x2F;<br>  │   ├── ConfigBaseScript.asmdef<br>  │   └── BaseConfig.cs<br>  ├──_Manager&#x2F;<br>  │   ├── Manager.asmdef<br>  │   └── GameManager.cs<br>  ├──_Scripts&#x2F;<br>  │   ├── Scripts.asmdef<br>  │   └── HotfixLogic.cs<br>  └──_Util&#x2F;<br>  ├── Util.asmdef<br>  └── Utility.cs</p>
-</li>
-<li><p>当程序集内脚本引用了别的程序集的脚本，需要设置对应引用</p>
-</li>
-<li><p>点击Assembly Definition Asset中Assembly Definition Reference-&gt;添加程序集</p>
-</li>
-</ul>
-<p><strong>例如：</strong></p>
-<ul>
-<li>A.Assembly[AClass,DClass,EClass]</li>
-<li>B.Assembly[BClass,CClass]</li>
-<li>A.Assembly ref B.Assembly -&gt; AClass ref BClass A程序集引用了B程序集后，AClass才能调用BClass</li>
-<li>注意循环引用，如果需要相互引用，需要抽象一层，接口或者类都行</li>
-</ul>
-<h4 id="打包程序集"><a href="#打包程序集" class="headerlink" title="打包程序集"></a>打包程序集</h4><ul>
-<li>Project Setting-&gt;GtvrudCLR Settings-&gt;<code>Hot UpdateAssembly Deinitions</code>-&gt;添加你需要热更的程序集</li>
-<li>Project Setting-&gt;GtvrudCLR Settings-&gt;<code>Patch AOT Assemblies</code>-&gt;补充元数据</li>
-</ul>
-<a class="button  center large" href='<https://hybridclr.doc.code-philosophy.com/docs/beginner/generic' title='<font size=2>元数据补充相关文档</font>'><i class='fa> fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>元数据补充相关文档</font></a>
-
-<ul>
-<li>工具栏-&gt;HybridCLR-&gt;CompileDll</li>
-<li>DLL会生成在<code>ProjectName/HybridCLRData/HotUpdateDlls</code>下</li>
-<li>找到我们的需要热更的DLL 复制到 Asset&#x2F;DllCollect,添加后缀Bytes,方便后续通过Yooasset使用TextAsset加载</li>
-<li>可以通过editor脚本生成并复制（参考示例项目）</li>
-</ul>
-<a class="button  center large" href='<https://github.com/focus-creative-games/hybridclr_trial' title='<font size=2>示例项目</font>'><i class='fa> fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>示例项目</font></a>
-
-<h4 id="Yooasset打包资源"><a href="#Yooasset打包资源" class="headerlink" title="Yooasset打包资源"></a>Yooasset打包资源</h4><ul>
-<li>工具栏-&gt;YooAsset-&gt;AssetBundle Collector-&gt;设置需要收集的资源-&gt;save</li>
-<li>工具栏-&gt;YooAsset-&gt;AssetBundle Builder-&gt;Build</li>
-<li>Project&#x2F;Bundle&#x2F;[版本文件夹]&#x2F;[资源]</li>
-</ul>
-<p><strong>注意:</strong></p>
-<ul>
-<li>收集Dll需要FileIgnoreRule需要选择RawFileIgnoreRule</li>
-<li>打开定位寻址需要保证所有的资源名称不重复，因为内部会通过字典收集这些地址，会导致Key重复，构建出错<a class="button  center large" href='../../../../2024/08/28/UnityYooAsset/' title='<font size=2>了解如何收集与构建资源</font>'><i class='fa fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>了解如何收集与构建资源</font></a></li>
-</ul>
-<h4 id="搭建一个本地文件服务器"><a href="#搭建一个本地文件服务器" class="headerlink" title="搭建一个本地文件服务器"></a>搭建一个本地文件服务器</h4><ul>
-<li>我这里直接用的软件<a class="button  center large" href='<https://www.rejetto.com/hfs/' title='<font size=2>一键搭建软件</font>'><i class='fa> fa-solid fa-arrow-right fa-beat-fade'></i> <font size=2>一键搭建软件</font></a></li>
-<li>将YooAsset打包的资源放到本地文件服务器里</li>
-<li>创建配置脚本</li>
-</ul>
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>CdnConfig</span></figcaption><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CdnConfig</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> AndroidPath = <span class="string">&quot;CDN/Android/DefaultPackage/&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> IOSPath = <span class="string">&quot;CDN/iOS/DefaultPackage/&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> WindowsPath = <span class="string">&quot;CDN/StandaloneWindows64/DefaultPackage/&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> CdnServicesUrl = <span class="string">&quot;http://192.168.57.105:8080/&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> FailedServicesUrl = <span class="string">&quot;http://192.168.57.105:8080/&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> ResourceVersion = <span class="string">&quot;v0.0&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 获取对应平台资源链接</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;returns&gt;</span>对应平台CDN资源服务链接<span class="doctag">&lt;/returns&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">GetUrlByPlatfrom</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> FindUrlByPlatfrom();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 获取对应平台资源链接</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name=&quot;runtimePlatform&quot;&gt;</span>想要获取的平台<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;returns&gt;</span><span class="doctag">&lt;/returns&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">GetUrlByPlatfrom</span>(<span class="params">RuntimePlatform runtimePlatform</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> FindUrlByPlatfrom(runtimePlatform);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">FindUrlByPlatfrom</span>(<span class="params">RuntimePlatform runtimePlatform = <span class="literal">default</span>, <span class="built_in">string</span> resourceVersion = <span class="literal">null</span></span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (runtimePlatform == <span class="literal">default</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            runtimePlatform = Application.platform;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (resourceVersion == <span class="literal">null</span>) resourceVersion = ResourceVersion;</span><br><span class="line">        <span class="keyword">switch</span> (runtimePlatform)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.Android:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;AndroidPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.IPhonePlayer:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;IOSPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.WindowsPlayer:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;WindowsPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> RuntimePlatform.WindowsEditor:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">$&quot;<span class="subst">&#123;CdnServicesUrl&#125;</span><span class="subst">&#123;WindowsPath&#125;</span><span class="subst">&#123;resourceVersion&#125;</span>&quot;</span>;</span><br><span class="line">            <span class="literal">default</span>:</span><br><span class="line">                Log.Error(<span class="string">$&quot;检测到不兼容平台<span class="subst">&#123;runtimePlatform&#125;</span>&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">default</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
-
-<ul>
-<li>联机模式下加载</li>
-</ul>
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>StrategtSelect.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">//策略选择器</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">StrategtSelect</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Dictionary&lt;EPlayMode, Func&lt;IYooAssetInitializationStrategy&gt;&gt; modeMap =</span><br><span class="line">        <span class="keyword">new</span> Dictionary&lt;EPlayMode, Func&lt;IYooAssetInitializationStrategy&gt;&gt;()</span><br><span class="line">    &#123;</span><br><span class="line">        &#123; EPlayMode.EditorSimulateMode, () =&gt; <span class="keyword">new</span> EditorSimulateModeStrategy() &#125;,</span><br><span class="line">        &#123; EPlayMode.OfflinePlayMode, () =&gt; <span class="keyword">new</span> OfflinePlayModeStrategy() &#125;,</span><br><span class="line">        &#123; EPlayMode.HostPlayMode, () =&gt; <span class="keyword">new</span> HostPlayModeStrategy() &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IYooAssetInitializationStrategy <span class="title">GetStrategyByPlayMode</span>(<span class="params">EPlayMode mode</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (modeMap.TryGetValue(mode, <span class="keyword">out</span> <span class="keyword">var</span> strategy))</span><br><span class="line">            <span class="keyword">return</span> strategy();</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            Log.Error(<span class="string">$&quot;No strategy found for play mode: <span class="subst">&#123;mode&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 若找不到返回默认策略</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> HostPlayModeStrategy();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
-
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>IYooAssetInitializationStrategy.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">//策略初始化接口</span></span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IYooAssetInitializationStrategy</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">Initialize</span>(<span class="params">ResourcePackage package</span>)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>AInitializeYooAsset.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//策略基类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title">BaseStrategy</span> : <span class="title">IYooAssetInitializationStrategy</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> IEnumerator <span class="title">Initialize</span>(<span class="params">ResourcePackage package</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">InitializePackageAsync</span>(<span class="params">ResourcePackage package, InitializeParameters initParameters</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Log.Info(<span class="string">&quot;初始化包&quot;</span>);</span><br><span class="line">        <span class="comment">// 异步执行初始化操作</span></span><br><span class="line">        <span class="keyword">var</span> initOperation = package.InitializeAsync(initParameters);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> initOperation;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 根据初始化结果记录日志</span></span><br><span class="line">        <span class="keyword">if</span> (initOperation.Status == EOperationStatus.Succeed)</span><br><span class="line">            Log.Info(<span class="string">&quot;资源包初始化成功！&quot;</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            Log.Error(<span class="string">$&quot;资源包初始化失败：<span class="subst">&#123;initOperation.Error&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//策略实现</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HostPlayModeStrategy</span> : <span class="title">BaseStrategy</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> IEnumerator <span class="title">Initialize</span>(<span class="params">ResourcePackage package</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 远程资源模式初始化逻辑</span></span><br><span class="line">        <span class="comment">// <span class="doctag">TODO:</span> 联机运行模式初始化逻辑</span></span><br><span class="line">        IRemoteServices remoteServices = <span class="keyword">new</span> RemoteServices(CdnConfig.GetUrlByPlatfrom(), CdnConfig.GetUrlByPlatfrom());</span><br><span class="line">        <span class="keyword">var</span> cacheFileSystem = FileSystemParameters.CreateDefaultCacheFileSystemParameters(remoteServices,<span class="keyword">new</span> FileDecryption());</span><br><span class="line">        <span class="keyword">var</span> initParameters = <span class="keyword">new</span> HostPlayModeParameters();</span><br><span class="line">        initParameters.CacheFileSystemParameters = cacheFileSystem;</span><br><span class="line">        <span class="keyword">var</span> initOperation = InitializePackageAsync(package, initParameters);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> initOperation;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
-
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>YooAssetsMgr.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> Cysharp.Threading.Tasks;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> Cysharp.Threading.Tasks;</span><br><span class="line"><span class="keyword">using</span> Framework;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.UI;</span><br><span class="line"><span class="keyword">using</span> UnityGameFramework.Runtime;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IAssetDownloader</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">UniTask <span class="title">Download</span>()</span>;</span><br><span class="line">    <span class="function">ResourceDownloaderOperation <span class="title">GetDownloader</span>()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnDownloadErrorFunction</span>(<span class="params"><span class="built_in">string</span> fileName, <span class="built_in">string</span> error</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnDownloadProgressUpdateFunction</span>(<span class="params"><span class="built_in">int</span> totalDownloadCount, <span class="built_in">int</span> currentDownloadCount, <span class="built_in">long</span> totalDownloadBytes, <span class="built_in">long</span> currentDownloadBytes</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnDownloadOverFunction</span>(<span class="params"><span class="built_in">bool</span> isSucceed</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnStartDownloadFileFunction</span>(<span class="params"><span class="built_in">string</span> fileName, <span class="built_in">long</span> sizeBytes</span>)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">YooAssetsMgr</span> : <span class="title">IAssetDownloader</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> IYooAssetInitializationStrategy initializationStrategy;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> IEnumerator <span class="title">StartLoadAsset</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> initializationStrategy.Initialize(curResourcePackage);<span class="comment">//初始化当前模式资源包</span></span><br><span class="line">        <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">RequestPackageVersion</span>()</span>;<span class="comment">//请求包版本</span></span><br><span class="line">        <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">UpdatePackageManifest</span>()</span>;<span class="comment">//请求包清单</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<ul>
-<li>初始化包信息完成后</li>
-<li>通过curResourcePackage.CreateResourceDownloader(int downloadingMaxNumber, int failedTryAgain, int timeout &#x3D; 60)获取下载器</li>
-<li>下载器提供TotalDownloadCount属性判断是否有新的内容需要下载</li>
-<li>下载完成后我们的资源也全都到位了</li>
-<li>通过LoadAssetSync同步加载我们的热更模块以及入口对象</li>
-</ul>
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>ProcedureLoadAssetDown.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> textAsset = YooAssets.LoadAssetSync(<span class="string">&quot;Hotfix.dll&quot;</span>).AssetObject <span class="keyword">as</span> TextAsset;</span><br><span class="line">Assembly.Load(textAsset.bytes);</span><br><span class="line"><span class="keyword">var</span> initObject = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;Assets/Art/ScriptPrefab/BootHotfixEntrace.prefab&quot;</span>);</span><br><span class="line">GameObject.Instantiate(initObject.AssetObject);</span><br></pre></td></tr></table></figure></div>
-
-<ul>
-<li>在Awake 调用补充元数据函数</li>
-<li>Start中加载首页需要展示的内容</li>
-</ul>
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>BootHotfixEntrace.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> HybridCLR;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> YooAsset;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">BootHotfixEntrace</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">LoadMetadataForAOTAssemblies</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        List&lt;<span class="built_in">string</span>&gt; aotMetaAssemblyFiles = <span class="keyword">new</span> List&lt;<span class="built_in">string</span>&gt;()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;mscorlib.dll&quot;</span>,</span><br><span class="line">            <span class="string">&quot;System.dll&quot;</span>,</span><br><span class="line">            <span class="string">&quot;System.Core.dll&quot;</span>,</span><br><span class="line">            <span class="string">&quot;UniTask.dll&quot;</span>,</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 注意，补充元数据是给AOT dll补充元数据，而不是给热更新dll补充元数据。</span></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 热更新dll不缺元数据，不需要补充，如果调用LoadMetadataForAOTAssembly会返回错误</span></span><br><span class="line">        HomologousImageMode mode = HomologousImageMode.SuperSet;</span><br><span class="line">        <span class="keyword">var</span> package = GameMgr.Inst.yooAssetsMgr.curResourcePackage;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> aotDllName <span class="keyword">in</span> aotMetaAssemblyFiles)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> handle = package.LoadAssetSync&lt;TextAsset&gt;(aotDllName);</span><br><span class="line">            <span class="keyword">var</span> dllBytes = handle.AssetObject <span class="keyword">as</span> TextAsset;</span><br><span class="line">            <span class="comment">// 加载assembly对应的dll，会自动为它hook。一旦aot泛型函数的native函数不存在，用解释器版本代码</span></span><br><span class="line">            LoadImageErrorCode err = RuntimeApi.LoadMetadataForAOTAssembly(dllBytes.bytes, mode);</span><br><span class="line">            Debug.Log(<span class="string">$&quot;LoadMetadataForAOTAssembly:<span class="subst">&#123;aotDllName&#125;</span>. mode:<span class="subst">&#123;mode&#125;</span> ret:<span class="subst">&#123;err&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Awake</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        LoadMetadataForAOTAssemblies();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> LoginPanel = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;xxx.prefab&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> MainPanel = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;xxxx.prefab&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> ActorPar = YooAssets.LoadAssetSync&lt;GameObject&gt;(<span class="string">&quot;xxxxx.prefab&quot;</span>);</span><br><span class="line">        Framework.EventListener.Instance.<span class="keyword">on</span>(EventConst.LOGIN_END, () =&gt;</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;资源释放&quot;</span>);</span><br><span class="line">            LoginPanel.Release();</span><br><span class="line">        &#125;);</span><br><span class="line">        Instantiate(MainPanel.AssetObject);</span><br><span class="line">        <span class="keyword">var</span> obj = Instantiate(LoginPanel.AssetObject <span class="keyword">as</span> GameObject, GameObject.Find(<span class="string">&quot;Canvas&quot;</span>).transform);</span><br><span class="line">        obj.SetActive(<span class="literal">true</span>);</span><br><span class="line">        <span class="keyword">var</span> enter_obj = obj.transform.Find(<span class="string">&quot;enter_btn&quot;</span>);</span><br><span class="line">        enter_obj.gameObject.SetActive(<span class="literal">true</span>);</span><br><span class="line">        Instantiate(ActorPar.AssetObject);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
-
-<h4 id="热更DLL"><a href="#热更DLL" class="headerlink" title="热更DLL"></a>热更DLL</h4><ul>
-<li>修改热更代码-&gt;重新build资源包-&gt;替换服务器资源-&gt;YooAsset会检查对应的package.json内的版本号查看差异并刷新清单下载新的内容</li>
-<li>资源同上，具体看不同HybridCLR与YooAsset的实践文章</li>
-</ul>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><ul>
-<li>使用过程中其实出现了很多问题，需要常看两个框架的文档，里面有常见问题的解决方案。</li>
-<li>例如AOT模块不能依赖热更模块</li>
-<li>加载资源会生成句柄，不使用需要及时回收，否则后造成内存泄漏</li>
-</ul>
-]]></content>
-      <categories>
-        <category>YooAsset,Hybridclr</category>
-      </categories>
-      <tags>
-        <tag>资源管理,热更</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity-HybridCLR</title>
-    <url>/2024/09/05/Unity-Hybridclr/</url>
-    <content><![CDATA[<h2 id="HybridCLR（huatuo）-介绍"><a href="#HybridCLR（huatuo）-介绍" class="headerlink" title="HybridCLR（huatuo） 介绍"></a>HybridCLR（huatuo） 介绍</h2><ul>
-<li>HybridCLR是一个特性完整、零成本、高性能、低内存的近乎完美的Unity全平台原生c#热更新解决方案。</li>
-</ul>
-<p>HybridCLR扩充了il2cpp运行时代码，使它由纯AOT runtime变成AOT+Interpreter 混合runtime，进而原生支持动态加载assembly，从底层彻底支持了热更新。使用HybridCLR技术的游戏不仅能在Android平台，也能在IOS、Consoles、WebGL等所有il2cpp支持的平台上高效运行。</p>
-<p>由于HybridCLR对ECMA-335规范 的良好支持以及对Unity开发工作流的高度兼容，Unity项目在接入HybridCLR后，可以几乎无缝地获得C#代码热更新的能力，开发者不需要改变日常开发习惯和要求。HybridCLR首次实现了将Unity平台的全平台代码热更新方案的工程难度降到几乎为零的水平。</p>
-<details class="[red]" data-header-exclude><summary><i class="fa-solid fa-chevron-right"></i>ECMA-335规范 </summary>
-              <div class='content'>
-              <p><a class="link"   href="https://www.ecma-international.org/wp-content/uploads/ECMA-335_6th_edition_june_2012.pdf" >https://www.ecma-international.org/wp-content/uploads/ECMA-335_6th_edition_june_2012.pdf <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
-              </div>
-            </details>
-
-<h2 id="支持的版本与平台"><a href="#支持的版本与平台" class="headerlink" title="支持的版本与平台"></a>支持的版本与平台</h2><ul>
-<li>支持2019.4.x、2020.3.x、2021.3.x、2022.3.x、2023.2.x、6000.x.y全系列LTS版本</li>
-<li>支持所有il2cpp支持的平台</li>
-<li>支持团结引擎和鸿蒙平台</li>
-</ul>
-<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><ul>
-<li>在unity的il2cpp之类的AOT runtime额外提供了interpreter模块，将它们由纯AOT运行时改造为”AOT + Interpreter”混合运行方式。</li>
-<li>实现了一个高效的元数据(dll)解析库</li>
-<li>改造了元数据管理模块，实现了元数据的动态注册</li>
-<li>实现了一个IL指令集到自定义的寄存器指令集的compiler</li>
-<li>实现了一个高效的寄存器解释器</li>
-<li>额外提供大量的instinct函数，提升解释器性能</li>
-</ul>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../Image/Unity-Hybridclr/image.png"
-                      alt="working principle"
-                ></p>
-<p><strong>推荐兄弟们看作者的解析：</strong><a class="link"   href="https://hybridclr.doc.code-philosophy.com/blog" >https://hybridclr.doc.code-philosophy.com/blog <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
-]]></content>
-      <categories>
-        <category>HybridCLR</category>
-      </categories>
-      <tags>
-        <tag>热更框架</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity-HybridCLR-实践</title>
-    <url>/2024/09/05/Unity-Hybridclr-instance/</url>
-    <content><![CDATA[<a class="button  center large" href='https://hybridclr.doc.code-philosophy.com/docs/beginner/quickstart' title='参考文档'><i class='fa fa-thumbs-up'></i> 参考文档</a>
-
-<h2 id="实践环境"><a href="#实践环境" class="headerlink" title="实践环境"></a>实践环境</h2><ul>
-<li><p>Unity 2022.3.41f(LTS)</p>
-</li>
-<li><p>IL2CPP模块</p>
-</li>
-<li><p>Visual Studio 2022 (添加Unity游戏开发、c++游戏开发组件)</p>
-</li>
-<li><p>Package Manager 安装 com.code-philosophy.hybridclr 我用的版本是v6.7.1</p>
-</li>
-</ul>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><ul>
-<li><p>基础的步骤就不记录了（例如场景创建什么的），只记录与Hybridclr相关的内容</p>
-</li>
-<li><p>作者提供的示例项目，我是在示例项目基础上开始的</p>
-<a class="button  center large" href='https://github.com/focus-creative-games/hybridclr_trial' title='GitHub'><i class='fa fa-thumbs-up'></i> GitHub</a>
-<a class="button  center large" href='https://gitee.com/focus-creative-games/hybridclr_trial' title='Gitee'><i class='fa fa-thumbs-up'></i> Gitee</a></li>
-</ul>
-<p><strong>创建热更模块：</strong></p>
-<ul>
-<li><p>创建 <code>Assets/HotUpdate2</code> 目录</p>
-</li>
-<li><p>在目录下创建Assembly Definition,创建一个名为HotUpdate2的程序集模块</p>
-</li>
-</ul>
-<p><strong>配置HybridCLR：</strong></p>
-<ul>
-<li>点击工具栏</li>
-<li>打开 Project Settings</li>
-<li>选择 HybridCLR Settings</li>
-<li>配置 Hot Update Assembly Definitions</li>
-<li>添加程序集 HotUpdate2</li>
-</ul>
-<p><strong>配置PlayerSetting:</strong></p>
-<ul>
-<li>Project Settings-&gt;Player-&gt;Other-&gt;Configuration</li>
-<li>Scripting Backend 切换为 IL2CPP</li>
-<li>Api Compatability Level 切换为 .Net Framework</li>
-<li>Api Compatability Level版本选择：.Net 4.x(Unity 2019-2020) 或 .Net Framework（Unity 2021+）</li>
-<li>HybridClr包低于4.0需要关闭增量GC</li>
-</ul>
-<p><strong>创建热更脚本：</strong></p>
-<ul>
-<li>在热更模块目录下创建Hello.cs</li>
-</ul>
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>Hello.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Hello</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">StaticStart</span>()</span>&#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Call static Fun.Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
-
-<p><strong>加载热更程序集：</strong></p>
-<ul>
-<li>编辑器加载</li>
-<li>创建 EditorLoadDll.cs 脚本</li>
-</ul>
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>EditorLoadDLL.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">EditorLoadDll</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> UNITY_EDITOR</span></span><br><span class="line">        Assembly hotUpdateAss = System.AppDomain.CurrentDomain.GetAssemblies().First(a =&gt; a.GetName().Name == <span class="string">&quot;HotUpdate2&quot;</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">        Assembly hotUpdateAss = Assembly.Load(File.ReadAllBytes(<span class="string">$&quot;<span class="subst">&#123;Application.streamingAssetsPath&#125;</span>/HotUpdate2.dll.bytes&quot;</span>));</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">        Type type = hotUpdateAss.GetType(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line">        type.GetMethod(<span class="string">&quot;StaticStart&quot;</span>).Invoke(<span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> hello = type.Assembly.CreateInstance(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line">        hello.GetType().GetMethod(<span class="string">&quot;Start&quot;</span>).Invoke(hello, <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
-
-<ul>
-<li>工具栏-&gt;Build-&gt;BuildAssetsAndCopyToStreamingAssets（会打包并复制dll到<code>StreamingAssets</code>目录下）</li>
-<li>此外hybridCLR还提供单独构建DLL的选项，<code>工具栏-&gt;HybridCLR-&gt;CompileDll</code>(会打包到工程根目录<code>HybridCLRData/HotUpdateDlls</code>下,编辑器下复制对应DLL并增加.bytes后缀再复制到Asset&#x2F;StreamingAsset下)</li>
-<li>场景内创建一个GameObject-&gt;挂载脚本-&gt;运行</li>
-</ul>
-<h2 id="打包后运行并热更"><a href="#打包后运行并热更" class="headerlink" title="打包后运行并热更"></a>打包后运行并热更</h2><ul>
-<li><p>工具栏-&gt;File-&gt;Biuld And Run<br><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../Image/Unity-Hybridclr/runAtPc.png"
-                      alt="打包运行"
-                ></p>
-</li>
-<li><p>修改Hello.cs</p>
-</li>
-</ul>
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><figcaption><span>Hello.cs</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Hello</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Start is called before the first frame update</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hot fix Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">StaticStart</span>()</span>&#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hot fix Call static Fun.Hello HybridCLR&quot;</span>);   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-
-<ul>
-<li>工具栏-&gt;HybridCLR-&gt;CompileDLL-&gt;Win64(重新构建DLL)</li>
-<li>给DLL添加.bytes后缀替换游戏包内的DLL（游戏文件夹&#x2F;HybridCLRTrial_Data&#x2F;StreamingAssets）</li>
-<li>重新运行游戏</li>
-</ul>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../Image/Unity-Hybridclr/hotfixRun.png"
-                      alt="hotfixRun"
-                ></p>
-]]></content>
-      <categories>
-        <category>HybridCLR</category>
-      </categories>
-      <tags>
-        <tag>热更框架</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity可视化剧情编辑器</title>
-    <url>/2024/11/04/UnityDialogueEditor/</url>
-    <content><![CDATA[<h2 id="整体设计"><a href="#整体设计" class="headerlink" title="整体设计"></a>整体设计</h2><h3 id="基于NodeGraphProcess-graphView-Odin"><a href="#基于NodeGraphProcess-graphView-Odin" class="headerlink" title="基于NodeGraphProcess+graphView+Odin"></a>基于NodeGraphProcess+graphView+Odin</h3><p><strong>NodeGraphProcess:</strong><br>NodeGraphProcessor 基于 Unity 的 GraphView 技术，速度也非常快，并且可以很好地处理大型图形。<br><strong>GraphView:</strong><br>GraphView 是 Unity 中用于构建图形用户界面的一个系统，通常用于创建可视化编辑器、节点图形或其他需要图形交互的应用。<br><strong>Odin:</strong><br>Odin Inspector 是一个 Unity 编辑器扩展工具，旨在增强 Unity 编辑器的功能和用户体验。它提供了许多强大的功能，允许开发者更轻松地创建和管理游戏对象的属性和编辑器界面。</p>
-<h3 id="UML类图"><a href="#UML类图" class="headerlink" title="UML类图"></a>UML类图</h3><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../Image/UnityDialogueEditor/%E5%89%A7%E6%83%85%E7%BC%96%E8%BE%91%E5%99%A8-%E6%B5%81%E7%A8%8B%E8%A7%86%E5%9B%BE%E7%B1%BB.drawio.png"
-                      alt="流程视图"
-                ></p>
-<p><strong>流程Graph类设计：</strong></p>
-<ul>
-<li>剧情编辑器的流程视图继承了NodeGraphProcessor提供的基类BaseGraph</li>
-<li>BaseGraph提供了可视化流图的基础功能，编辑器界面的实现基于BaseGraphView</li>
-<li>StroyGraph实现了IRunStroyGraph,IRunStroyGraph提供了Graph在运行时需要处理的函数,通过IRunStroyGraph避免引用StroyGraph的实例导致循环引用</li>
-<li>所有的Graph的最下层的基类都是SerializedScriptableObject，意味着它可以被Unity序列化并保存，<br>得益于odin可以更好的配置里面的内容</li>
-</ul>
-<h3 id="节点类图"><a href="#节点类图" class="headerlink" title="节点类图"></a>节点类图</h3><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../Image/UnityDialogueEditor/%E5%89%A7%E6%83%85%E7%BC%96%E8%BE%91%E5%99%A8-%E8%8A%82%E7%82%B9%E8%AE%BE%E8%AE%A1.drawio.png"
-                      alt="节点类图"
-                ></p>
-<p><strong>节点设计:</strong></p>
-<ul>
-<li><p>NodeGraphProcessor提供了BaseNode作为节点的基类，在这个基础上派生出了StroyBaseNode以及StroyExcuteNode,这里考虑到了部分节点不存在Next只依赖节点内部实现。</p>
-</li>
-<li><p>类图里简略了很多节点的具体关系，因为太多了</p>
-</li>
-<li><p>渲染节点需要覆写基类中INodeRuntime的两个函数实现,分别是Render()以及Refresh(),后续渲染逻辑的运行大部分依赖这两个函数的实现。</p>
-</li>
-</ul>
-<div class="highlight-container" data-rel="C#"><figure class="iseeu highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">RenderNode</span>()</span></span><br><span class="line">   &#123;</span><br><span class="line">       <span class="keyword">var</span> stage = GameObject.Find(<span class="string">&quot;StageCanvas&quot;</span>).transform;</span><br><span class="line">       <span class="keyword">if</span> (asset != <span class="literal">null</span>)</span><br><span class="line">       &#123;</span><br><span class="line">           <span class="comment">//渲染节点画面</span></span><br><span class="line">           asset.GenerateDialogByInfo(stage);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">       &#123;</span><br><span class="line">           Debug.LogWarning(<span class="string">&quot;DialogAsset 为空，无法渲染节点内容&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">RefreshNode</span>()</span></span><br><span class="line">   &#123;</span><br><span class="line">       DelayUpdate();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></div>
-
-<ul>
-<li><p>如果需要获取节点内部数据需要节点实现IStroyNodeGetInfo，通过接口解耦，组合接口让派生类拥有更多功能</p>
-</li>
-<li><p>至于IStroyOptionNode是为了Editor下将所有剧情编辑器的节点规整到一起，打开节点编辑面板时可以保证只存在剧情编辑器开发的节点，这里通过反射以及配置表实现，应该有更好的方式，还没想到</p>
-</li>
-<li><p>NodeView影响节点在流程视图里的显示，要不要重写看具体需求</p>
-</li>
-<li><p>节点内部需要覆写 TryGetOutputValue(),这个函数实现影响下一个节点获取上一个节点输出的内容，当然也有部分节点不需要实现，看具体需求。</p>
-</li>
-</ul>
-<a class="button  center large" href='https://alelievr.github.io/NodeGraphProcessor/api/index.html' title='NodeGraphProcessor文档'><i class='fa fa-thumbs-up'></i> NodeGraphProcessor文档</a>
-
-
-<h3 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h3><ul>
-<li>将整个流程图想象成一个大舞台，在舞台演示剧情的内容</li>
-<li>将节点想象成剧情里的一幕</li>
-<li>所有内容都在舞台中展示，一幕完成切换下一幕<br><strong>执行流程图：</strong></li>
-</ul>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../Image/UnityDialogueEditor/%E5%89%A7%E6%83%85%E7%BC%96%E8%BE%91%E5%99%A8-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.drawio.png"
-                      alt="执行流程"
-                ></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>目前还存在一定问题，执行流程还有一部分情况未完善</li>
-<li>整体设计考虑了将节点抽象成一个个体，框架不依赖节点具体实现，框架只规范节点执行的流程，<br>这样的好处我能想到的就是每个节点都能具体实现任何逻辑，只要保证节点与节点之间可以步进，理论上在节点中添加一个小游戏都没有问题，说到这里我觉得我还应该去规范节点的开始与结束（简称状态机），保证步进的稳定，避免步进时上一个未完成或下一个还没有准备好的情况。</li>
-</ul>
-<h2 id="剧情编辑器截图"><a href="#剧情编辑器截图" class="headerlink" title="剧情编辑器截图"></a>剧情编辑器截图</h2><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../Image/UnityDialogueEditor/image.png"
-                      alt="alt text"
-                ></p>
-<ul>
-<li>生成创建剧情所需资源的编辑器工具，主要使用Odin，大部分内容文档都提供了帮助</li>
-</ul>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../Image/UnityDialogueEditor/process_unity.png"
-                      alt="alt text"
-                ></p>
-<ul>
-<li>当前小节内容配置，支持生成多选项，与或非判断，节点回退，表演数据配置，文本配置，立绘配置，Live2d配置，出场动画配置，自适应立绘位置等内容</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Gameframework</category>
-      </categories>
-      <tags>
-        <tag>游戏框架记录</tag>
       </tags>
   </entry>
 </search>
